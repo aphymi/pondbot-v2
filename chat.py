@@ -16,7 +16,7 @@ class Message:
 		Returns (str): the text content of the message.
 		"""
 		
-		pass
+		raise NotImplementedError("get_text() has not been implemented")
 	
 	def get_sender(self):
 		"""
@@ -25,7 +25,7 @@ class Message:
 		Returns (str): name of the sender.
 		"""
 		
-		pass
+		raise NotImplementedError("get_sender() has not been implemented")
 	
 	def reply(self, msg):
 		"""
@@ -35,7 +35,7 @@ class Message:
 			msg (str): the message to send in reply.
 		"""
 		
-		pass
+		raise NotImplementedError("reply() has not been implemented")
 
 
 def parse(msg):
