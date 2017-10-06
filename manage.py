@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import logging
 import os
 import sys
 
@@ -23,6 +24,9 @@ if __name__ == "__main__":
 		
 		# Run the bot and detach from it immediately.
 		elif command == "run":
+			# TODO Properly configure logging. Put this somewhere else?
+			logging.basicConfig(filename="pb.log", level="DEBUG")
+			
 			os.system("./manage.py keep &") #TODO Change this to a subprocess call (creationflags=DETACHED_PROCESS)
 		
 		# Stop any running instances of the bot.
