@@ -7,7 +7,7 @@ import sys
 from imps.terminal import bot as chat_imp
 
 if __name__ == "__main__":
-	usage = "Usage: ./manage.py <run|kill|keep>"
+	usage = "Usage: ./manage.py <run|kill|keep|make-configs>"
 	
 	# sys.argv will look something like ['./manage.py', 'start'],
 	#   so the specified command should be at sys.argv[1]
@@ -33,6 +33,10 @@ if __name__ == "__main__":
 		# This should only be used if the bot won't respond to commands.
 		elif command == "kill":
 			os.system("kill $(ps aux | grep '[m]anage.py runkeep' | awk '{print $2}')")
+		
+		elif command == "make-configs":
+			# TODO Move configs to configs/
+			pass
 		
 		else:
 			print("Unknown command.")

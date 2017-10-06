@@ -57,26 +57,39 @@ def set_up():
 	pass
 
 
-def load_config(config):
+def load_config(config, default_location=None):
 	"""
 	Load one of the configs.
 	
 	Args:
-		config (str): the name of the config to load (e.g. "commands" for commands.yml).
+		config (str): the name of the config to load in configs/ (e.g. "commands" for commands.yml).
+		default_location (str, optional): the location of the default file for this config, relative to pondbot-v2/.
+			Defaults to None.
 
 	Returns (dict|list): A dictionary or list representing the contents of the chosen config file.
+	
+	If *default* is not specified but *config* doesn't exist, a FileNotFoundError will be raised.
 	"""
 	
-	# Check if the config exists.
-	if not os.path.isfile("configs/%s.yml" % config):
-		# If it doesn't, check if there's a default for it.
-		if os.path.isfile("configs/defaults/%s.yml" % config):
-			# If so, copy the default over, and everything's peachy.
-			shutil.copyfile("configs/defaults/%s.yml", "configs/%s.yml")
-		else:
-			# If not, raise a scary exception.
-			raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), "%s.yml" % config)
+	config_location = "configs/%s.yml" % config
 	
-	# At this point, either the config existed, or has now been generated from the default.
-	with open("configs/%s.yml" % config) as file:
+	# Check if the config exists.
+	if not os.path.isfile(config_location):
+		logging.debug("Config '%s' not found; looking for default.", config)
+		
+		# If not, just copy the default over, and everything's peachy.
+		if default_location:
+			if os.path.isfile(default_location):
+				shutil.copyfile(default_location, config_location)
+				logging.debug("Config '%s' created from default.", config)
+			else:
+				# If the *default* doesn't exist, raise a scary exception.
+				raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), default_location)
+			
+		else:
+			# If no default was given, we're out of luck.
+			raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), config_location)
+	
+	# At this point, if the config didn't exist before, it does now.
+	with open(config_location) as file:
 		return yaml.load(file)
