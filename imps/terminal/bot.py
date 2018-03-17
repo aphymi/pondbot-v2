@@ -2,19 +2,29 @@
 An implementation of PondBot for a simple terminal.
 """
 
-from chat import Message, parse
+from bot import Message, Bot, set_up
+from exceptions import BotShutdownException
 
-def run_bot():
+
+
+class TerminalBot(Bot):
 	"""
-	Start the bot.
+	A bot implementation involving only stdin and stdout.
 	"""
 	
-	while True:
-		msg = input("> ")
-		if msg == "quit":
-			break
-		message = TerminalMessage(msg)
-		parse(message)
+	def run(self):
+		set_up()
+		
+		while True:
+			msg = input("> ")
+			if msg.lower() == "quit":
+				raise BotShutdownException
+			msg = TerminalMessage(msg)
+			
+			if msg.reply_msg is not None:
+				msg.reply()
+
+bot = TerminalBot
 
 
 class TerminalMessage(Message):
@@ -23,13 +33,12 @@ class TerminalMessage(Message):
 	"""
 	
 	def __init__(self, msg):
-		self.msg = msg
-	
-	def reply(self, msg):
-		print(msg)
+		self.raw_msg = msg
+		self.text_content = msg
+		self.sender_name = "TERMINAL USER"
+		self.reply_msg = None
 		
-	def get_text(self):
-		return self.msg
+		self._parse()
 	
-	def get_sender(self):
-		return "TERMINAL"
+	def reply(self):
+		print(self.reply_msg)
