@@ -12,37 +12,64 @@ import requests
 from commands import Command, CommandException
 
 
-MAX_ROLL_AMOUNT = 20 # The maximum number of dice that can be rolled in one call to roll()
-
-# TODO: set a max on number of dice that can be rolled in command
-# TODO: add negative modifier? Allow spaces?
-# TODO: prevent nonsensical values (!roll 10d0)
 # Can't give more descriptive names to arg1 and arg2, because the meanings can change.
 # TODO: Figure out better names for arg1 & arg2
-# TODO: Make all the args ints beforehand
-# TODO: Add individual rolls for complex rolls.
-mult_roll_re = re.compile(r"(?P<arg1>\d+)(d(?P<arg2>\d+)(\+(?P<modifier>\d+))?)?")
 
+MAX_ROLL_AMOUNT = 20  # The maximum number of dice that can be rolled in one call to roll().
+MAX_COMPLEX_SIDES = 999 # Maximum sides for a complex roll.
+mult_roll_re = re.compile(r"(?P<arg1>\d+)(d(?P<cmplx_sides>\d+)(?P<modifier>[+-]\d+)?)?")
 
-@Command(cooldown=5, args_val=(lambda args: len(args) == 1 and mult_roll_re.match(args[0])),
-		 args_usage="<sides>|<amount>d<sides>[+<mod>]")
-def roll(arg):
+# Args get joined in order to allow spaces.
+@Command(cooldown=5, args_val=(lambda args: mult_roll_re.match("".join(args))),
+		 args_usage="<sides>|<amount>d<sides>[+|-<mod>]")
+def roll(*args):
+	"""
+	Roll some dice.
 	
-	args = mult_roll_re.match(arg).groupdict()
-	simple = args["arg2"] is not None
-	if args["arg2"] is None: # Simple roll
+	In a simple roll, there is only a single argument, one integer. <sides>
+	In a complex roll, multiple dice are being rolled, possibly with a modifier.
+	"""
+	
+	args = mult_roll_re.match("".join(args)).groupdict()
+	
+	# If the second argument isn't included, it's a simple roll.
+	simple = args["cmplx_sides"] is None
+	
+	if simple:
 		sides = int(args["arg1"])
 		amount = 1
 		mod = 0
 	else:
-		sides = int(args["arg2"])
+		sides = int(args["cmplx_sides"])
 		amount = int(args["arg1"])
-		if amount > MAX_ROLL_AMOUNT:
-			raise CommandException("You tried to roll %s dice, while the maximum is %s." % (amount, MAX_ROLL_AMOUNT))
 		mod = 0 if not args["modifier"] else int(args["modifier"])
+	
+	# Argument errors.
+	if amount > MAX_ROLL_AMOUNT: # Too many dice gets spammy, *way* too many sides gets slow.
+		raise CommandException("You cannot roll more than %s dice." % MAX_ROLL_AMOUNT)
+	if amount > 1 and sides > MAX_COMPLEX_SIDES: # Too many sides gets spammy.
+		raise CommandException("Dice cannot have more than %s sides when rolling multiple dice." % MAX_COMPLEX_SIDES)
+	if amount == 0:
+		raise CommandException("You cannot roll 0 dice.")
+	if sides < 2:
+		raise CommandException("Dice must have at least 2 sides.")
 	
 	rolls = []
 	for i in range(amount):
 		rolls.append(random.randint(1, sides))
 		
-	return str(sum(rolls) + mod)
+	result = str(sum(rolls)+mod)
+	
+	if not simple:
+		# Put the modifier into string form, adding a plus first if it's positive. Empty string if mod is 0.
+		if mod < 0:
+			mod_str = str(mod)
+		elif mod > 0:
+			mod_str = "+" + str(mod)
+		else:
+			mod_str = ""
+		
+		return "({rolls}){mod} = {result}".format(rolls="+".join([str(r) for r in rolls]), mod=mod_str, result=result)
+	
+	return result
+
