@@ -1,0 +1,15 @@
+# Character[s] prepended to a string to make the bot run a command.
+command-prefix: "!"
+
+# Minimum seconds between uses of a single static command.
+statics-cooldown: 30
+
+# Commands that always output the same string.
+static-commands:
+  foo: "bar"
+
+# Extra names for commands. Format is `base command: list of string aliases`.
+aliases:
+  roll:
+  - dice
+  - random
