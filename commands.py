@@ -4,6 +4,76 @@ Manage chat command interactions in the bot.
 
 import functools
 
+import yaml
+
+from config_handler import configs
+
+from exceptions import CommandException
+
+dynamic_commands =  {} # command_name:command_func (str:callable)
+
+# Command modules to take commands from.
+registered_modules = [
+	"misc",
+]
+
+
+def register_commands():
+	"""
+	Load and register all commands for the bot.
+	Should only be called once per run.
+	"""
+	
+	dynamic_commands.clear()
+	
+	# TODO See if importing command mods gets fucked up after a bot restart
+	for mod in registered_modules:
+		# Just importing the modules will make the commands register themselves, because of @Command.
+		__import__("command_mods." + mod)
+
+
+def delegate_command(cmd):
+	"""
+	Retrieve a callable command from its string name.
+	
+	Args:
+		cmd: the name of the command to retrieve
+		
+	Returns: the callable for the desired command
+
+	"""
+	
+	com_conf = configs["commands"]
+	
+	# Check if the command is an alias for another command.
+	for com in com_conf["aliases"]:
+		if cmd in com_conf["aliases"][com]:
+			cmd = com
+	
+	if cmd in dynamic_commands:
+		return dynamic_commands[cmd]
+	elif cmd in com_conf["static-commands"]:
+		return (Command(static=True, cooldown=com_conf["statics-cooldown"], name=cmd)
+				(lambda args: com_conf["static-commands"][cmd]))
+			
+	raise CommandException("Unknown command")
+
+
+def validate_command_args(cmd, args):
+	"""
+	Validate the syntax of a set of arguments for the given command callable.
+	
+	Args:
+		cmd:  The callable command to validate arguments for.
+		args: The arguments to validate.
+	"""
+	
+	if not (cmd.meta["args_val"](args)):
+		# TODO Make it return the alias the command was called with in the invalid args message
+		raise CommandException("Invalid args. Usage: !%s %s" % (cmd.meta["name"], cmd.meta["args_usage"]))
+	# TODO Check if calling user has permission to run this command.
+	pass
+
 
 class Command:
 	"""
@@ -24,30 +94,47 @@ class Command:
 	Static and dynamic commands are disjoint and all-encompassing.
 	"""
 	
-	def __init__(self, static=False, cooldown=5, args_val=lambda args: True, args_usage=""):
-		self.static = static
-		self.cooldown = cooldown
-		self.args_val = args_val
-		self.args_usage = args_usage
-	
-	def __call__(self, cmd):
+	def __init__(self, **kwargs): # TODO 'name' kwarg is only really used for static commands. Is there a better solution?
 		"""
-		Call the wrapped command, returning its reply.
+		Specify certain meta command properties.
+		
+		Valid kwargs:
+			static -------- whether this command takes any arguments.
+			cooldown ------ minimum number of seconds between uses of this command, to avoid spamming.
+			args_val ------ a callable that returns True if the command arguments are well-formed, or False otherwise.
+			args_usage ---- a string showing the proper syntax for the command arguments.
+			name ---------- the name that this command is called by; by default, the name of the wrapped function.
+			no_perms_msg -- an optional specific message to return if someone uses this command without permission
+		"""
+		
+		self.meta = kwargs
+	
+	def __call__(self, cmd): # TODO Write a better one-line descr
+		"""
+		Wrap the given command with a few extra bits.
 		
 		Args:
-			cmd: The wrapped command.
+			cmd: The command to be wrapped.
 
-		Returns: A str containing the command's reply to the arguments, or None if there is no reply.
-
+		Returns: The wrapped function
 		"""
+		
 		@functools.wraps(cmd)
-		def wrapped_func(args=[]):
-			if self.static:
+		def wrapped_func(args=()):
+			if self.meta.get("static"):
 				# Don't bother passing any received arguments.
 				args.clear()
 			
 			return cmd(*args)
 		
 		wrapped_func.meta = self.meta
-		# TODO Here, add self to list of dynamic commands.
+		
+		# Don't save static commands to the list
+		if not self.meta.get("static"):
+			# Save it as the given name or, failing that, the name of the function.
+			dynamic_commands[self.meta.get("name") or cmd.__name__] = wrapped_func
+		
 		return wrapped_func
+
+
+
