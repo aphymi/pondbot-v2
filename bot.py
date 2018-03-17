@@ -48,7 +48,7 @@ class Message:
 				components = self.text_content[len(com_conf["command-prefix"]):].split()
 				cmd_name, args = components[0], components[1:]
 				command = commands.delegate_command(cmd_name)
-				commands.validate_command_args(command, args)
+				commands.validate_command_args(command, args, cmd_name)
 				self.reply_msg = command(args)
 				
 			except commands.CommandException as ex:

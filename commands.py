@@ -59,18 +59,23 @@ def delegate_command(cmd):
 	raise CommandException("Unknown command")
 
 
-def validate_command_args(cmd, args):
+def validate_command_args(cmd, args, alias=None):
 	"""
 	Validate the syntax of a set of arguments for the given command callable.
 	
 	Args:
-		cmd:  The callable command to validate arguments for.
-		args: The arguments to validate.
+		cmd ---- The callable command to validate arguments for.
+		args --- The arguments to validate.
+		alias -- The alias that the command was called with. Optional.
 	"""
 	
+	cmd_name = alias or cmd.meta["name"]
+	
 	if not (cmd.meta["args_val"](args)):
-		# TODO Make it return the alias the command was called with in the invalid args message
-		raise CommandException("Invalid args. Usage: !%s %s" % (cmd.meta["name"], cmd.meta["args_usage"]))
+		raise CommandException("Invalid args. Usage: {prefix}{name} {usage}".format(
+								prefix=configs["commands"]["command-prefix"],
+								name=cmd_name, usage=cmd.meta["args_usage"]))
+	
 	# TODO Check if calling user has permission to run this command.
 	pass
 
