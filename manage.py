@@ -54,9 +54,10 @@ if __name__ == "__main__":
 			os.system("kill $(ps aux | grep '[m]anage.py run' | awk '{print $2}')")
 		
 		elif command == "make-configs":
-			# TODO Move configs to configs/
+			config_handler.make_defaults()
 			pass
 		
+		# TODO Make a reset-config command to replace a config with the default.
 		
 		else:
 			print("Unknown command.")
