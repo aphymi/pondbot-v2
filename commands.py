@@ -4,8 +4,6 @@ Manage chat command interactions in the bot.
 
 import functools
 
-import yaml
-
 from config_handler import configs
 
 from exceptions import CommandException
@@ -26,7 +24,7 @@ def register_commands():
 	
 	dynamic_commands.clear()
 	
-	# TODO See if importing command mods gets fucked up after a bot restart
+	# TODO Check to see if importing command mods gets fucked up after a bot restart
 	for mod in registered_modules:
 		# Just importing the modules will make the commands register themselves, because of @Command.
 		__import__("command_mods." + mod)
@@ -37,9 +35,9 @@ def delegate_command(cmd):
 	Retrieve a callable command from its string name.
 	
 	Args:
-		cmd: the name of the command to retrieve
+		cmd -- the name of the command to retrieve
 		
-	Returns: the callable for the desired command
+	Returns: the callable for the desired command.
 
 	"""
 	
@@ -71,13 +69,10 @@ def validate_command_args(cmd, args, alias=None):
 	
 	cmd_name = alias or cmd.meta["name"]
 	
-	if not (cmd.meta["args_val"](args)):
+	if not cmd.meta["args_val"](args):
 		raise CommandException("Invalid args. Usage: {prefix}{name} {usage}".format(
 								prefix=configs["commands"]["command-prefix"],
 								name=cmd_name, usage=cmd.meta["args_usage"]))
-	
-	# TODO Check if calling user has permission to run this command.
-	pass
 
 
 class Command:
@@ -85,10 +80,10 @@ class Command:
 	Used as a decorator to define command objects.
 	
 	Attributes:
-		static (bool) ------ If True, this command is static. If False, it is dynamic.
+		static (bool) ------ If True, this command is static. If False, it is dynamic. Default: False
 		
 		cooldown (number) -- The mimimum time (in seconds) between when a command was last used,
-				and when it can be used again.
+				and when it can be used again. Default: 5
 				
 		args_val (func) ---- A function to be run and given the list of command arguments as a parameter.
 				When the arguments are syntactically valid for the command, it returns True. False otherwise.
@@ -99,7 +94,7 @@ class Command:
 	Static and dynamic commands are disjoint and all-encompassing.
 	"""
 	
-	def __init__(self, **kwargs): # TODO 'name' kwarg is only really used for static commands. Is there a better solution?
+	def __init__(self, **kwargs):
 		"""
 		Specify certain meta command properties.
 		
@@ -114,14 +109,14 @@ class Command:
 		
 		self.meta = kwargs
 	
-	def __call__(self, cmd): # TODO Write a better one-line descr
+	def __call__(self, cmd):
 		"""
-		Wrap the given command with a few extra bits.
+		Wrap the given command and save it to the command list, if it's dynamic.
 		
 		Args:
-			cmd: The command to be wrapped.
+			cmd -- The command to be wrapped.
 
-		Returns: The wrapped function
+		Returns: The wrapped function.
 		"""
 		
 		@functools.wraps(cmd)

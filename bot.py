@@ -1,14 +1,9 @@
-import errno
-import logging
-import os
-import shutil
-
-import yaml
-
 import config_handler
 import commands
+from exceptions import CommandException
 
 # TODO 'Expansions' module? Use to get title and such from YT links.
+# TODO Decide if imps need their own package, or can just be changed to e.g. terminal_bot.py
 
 class Bot:
 	"""
@@ -47,22 +42,20 @@ class Message:
 			try:
 				components = self.text_content[len(com_conf["command-prefix"]):].split()
 				cmd_name, args = components[0], components[1:]
+				
 				command = commands.delegate_command(cmd_name)
 				commands.validate_command_args(command, args, cmd_name)
 				self.reply_msg = command(args)
 				
-			except commands.CommandException as ex:
-				self.reply_msg = ("%s - There was an error while attempting that command: %s"
-								  	% (self.sender_name, ex.args[0]))
+			except CommandException as ex:
+				self.reply_msg = ("{user} - That command caused an error: {errmsg}".format(
+								  	user=self.sender_name, errmsg=ex.args[0]))
 		
 		# TODO else check for regex
 		
-	def reply(self, msg=None):
+	def reply(self):
 		"""
-		Send a reply to the received message. If no message is given, reply with saved value from last call to parse().
-		
-		Args:
-			msg (str, optional): the message to send in reply.
+		Send a reply to the received message.
 		"""
 		
 		raise NotImplementedError("reply() has not been implemented")

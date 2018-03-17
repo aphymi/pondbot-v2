@@ -1,10 +1,9 @@
 """
-An implementation of PondBot for a simple terminal.
+An implementation of PondBot for a simple terminal using only stdin and stdout.
 """
 
 from bot import Message, Bot, set_up
 from exceptions import BotShutdownException
-
 
 
 class TerminalBot(Bot):
@@ -21,8 +20,7 @@ class TerminalBot(Bot):
 				raise BotShutdownException
 			msg = TerminalMessage(msg)
 			
-			if msg.reply_msg is not None:
-				msg.reply()
+			msg.reply()
 
 bot = TerminalBot
 
@@ -41,4 +39,5 @@ class TerminalMessage(Message):
 		self._parse()
 	
 	def reply(self):
-		print(self.reply_msg)
+		if self.reply_msg:
+			print(self.reply_msg)

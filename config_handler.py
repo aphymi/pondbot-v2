@@ -1,8 +1,6 @@
 """
-File to handle loading and importation of configuration files.
+Module to handle loading of configuration files.
 """
-
-# TODO If any defaults are found without corresponding configs, make the configs
 
 import os
 from shutil import copyfile
@@ -13,7 +11,7 @@ configs = {}
 
 def load_all_configs():
 	"""
-	Load configuration files.
+	Load all configuration files.
 	"""
 	
 	configs.clear()
@@ -21,7 +19,6 @@ def load_all_configs():
 	for file in os.listdir("configs/"):
 		if file.endswith(".yml"):
 			conf = file[:-4] # Truncate the file extension.
-			configs[conf] = None
 			load_config(conf)
 	
 		

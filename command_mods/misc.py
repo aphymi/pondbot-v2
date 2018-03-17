@@ -7,17 +7,14 @@ Commands:
 
 import random
 import re
-import requests
 
 from commands import Command, CommandException
 
 
-# Can't give more descriptive names to arg1 and arg2, because the meanings can change.
-# TODO: Figure out better names for arg1 & arg2
 
 MAX_ROLL_AMOUNT = 20  # The maximum number of dice that can be rolled in one call to roll().
 MAX_COMPLEX_SIDES = 999 # Maximum sides for a complex roll.
-mult_roll_re = re.compile(r"(?P<arg1>\d+)(d(?P<cmplx_sides>\d+)(?P<modifier>[+-]\d+)?)?")
+mult_roll_re = re.compile(r"^(?P<arg1>\d+)(d(?P<cmplx_sides>\d+)(?P<modifier>[+-]\d+)?)?$")
 
 # Args get joined in order to allow spaces.
 @Command(cooldown=5, args_val=(lambda args: mult_roll_re.match("".join(args))),
