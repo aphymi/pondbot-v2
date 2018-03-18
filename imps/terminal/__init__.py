@@ -1,3 +1,0 @@
-"""
-Terminal implementation for PondBot.
-"""
