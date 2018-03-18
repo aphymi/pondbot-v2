@@ -51,8 +51,8 @@ def delegate_command(cmd):
 	if cmd in dynamic_commands:
 		return dynamic_commands[cmd]
 	elif cmd in com_conf["static-commands"]:
-		return (Command(static=True, cooldown=com_conf["statics-cooldown"], name=cmd)
-				(lambda args: com_conf["static-commands"][cmd]))
+		return (Command(static=True, cooldown=com_conf["statics-cooldown"], name=cmd, args_val=lambda: True)
+				(lambda *args: com_conf["static-commands"][cmd]))
 			
 	raise CommandException("Unknown command")
 
@@ -69,7 +69,7 @@ def validate_command_args(cmd, args, alias=None):
 	
 	cmd_name = alias or cmd.meta["name"]
 	
-	if not cmd.meta["args_val"](args):
+	if not cmd.meta["args_val"](*args):
 		raise CommandException("Invalid args. Usage: {prefix}{name} {usage}".format(
 								prefix=configs["commands"]["command-prefix"],
 								name=cmd_name, usage=cmd.meta["args_usage"]))
@@ -120,10 +120,10 @@ class Command:
 		"""
 		
 		@functools.wraps(cmd)
-		def wrapped_func(args=()):
+		def wrapped_func(*args):
 			if self.meta.get("static"):
 				# Don't bother passing any received arguments.
-				args.clear()
+				return cmd()
 			
 			return cmd(*args)
 		

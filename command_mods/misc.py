@@ -17,7 +17,7 @@ MAX_COMPLEX_SIDES = 999 # Maximum sides for a complex roll.
 mult_roll_re = re.compile(r"^(?P<arg1>\d+)(d(?P<cmplx_sides>\d+)(?P<modifier>[+-]\d+)?)?$")
 
 # Args get joined in order to allow spaces.
-@Command(cooldown=5, args_val=(lambda args: mult_roll_re.match("".join(args))),
+@Command(cooldown=5, args_val=(lambda *args: mult_roll_re.match("".join(args))),
 		 args_usage="<sides>|<amount>d<sides>[+|-<mod>]")
 def roll(*args):
 	"""

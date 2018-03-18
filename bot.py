@@ -45,7 +45,7 @@ class Message:
 				
 				command = commands.delegate_command(cmd_name)
 				commands.validate_command_args(command, args, cmd_name)
-				self.reply_msg = command(args)
+				self.reply_msg = command(*args)
 				
 			except CommandException as ex:
 				self.reply_msg = ("{user} - That command caused an error: {errmsg}".format(
