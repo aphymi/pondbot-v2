@@ -3,12 +3,20 @@ import commands
 from exceptions import CommandException
 
 # TODO 'Expansions' module? Use to get title and such from YT links.
-# TODO Decide if imps need their own package, or can just be changed to e.g. terminal_bot.py
 
 class Bot:
 	"""
 	Abstract class for the chat bot.
 	"""
+	
+	@staticmethod
+	def set_up():
+		"""
+		Set up implementation-agnostic things.
+		"""
+		
+		config_handler.load_all_configs()
+		commands.register_commands()
 	
 	def run(self):
 		"""
@@ -59,12 +67,3 @@ class Message:
 		"""
 		
 		raise NotImplementedError("reply() has not been implemented")
-
-
-def set_up():
-	"""
-	Set up implementation-agnostic things.
-	"""
-	
-	config_handler.load_all_configs()
-	commands.register_commands()

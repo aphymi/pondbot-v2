@@ -2,7 +2,7 @@
 An implementation of PondBot for a simple terminal using only stdin and stdout.
 """
 
-from bot import Message, Bot, set_up
+from bot import Message, Bot
 from exceptions import BotShutdownException
 
 
@@ -12,7 +12,7 @@ class TerminalBot(Bot):
 	"""
 	
 	def run(self):
-		set_up()
+		self.set_up()
 		
 		while True:
 			msg = input("> ")
