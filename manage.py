@@ -7,7 +7,7 @@ import config_handler
 from exceptions import BotRestartException, BotShutdownException
 # TODO Figure out a better way to specify implementation to use.
 # Select chat module to use.
-from imps import terminal_bot as bot_imp
+from imps import discord_bot as bot_imp
 
 if __name__ == "__main__":
 	usage = "Usage: manage.py <run|kill|keep|make-configs>"

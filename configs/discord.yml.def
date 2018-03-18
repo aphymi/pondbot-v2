@@ -1,0 +1,8 @@
+# The message the bot should send when it starts up.
+startup-msg: "Salutations!"
+
+# The id for the channel in which to announce that the bot has started. Leave blank for no join announcement.
+startup-channel: ""
+
+# Auth token for the bot.
+bot-token: ""
