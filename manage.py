@@ -1,13 +1,16 @@
 #!/usr/bin/python3
+from importlib import import_module
 import logging
 import os
 import sys
 
 import config_handler
 from exceptions import BotRestartException, BotShutdownException
-# TODO Figure out a better way to specify implementation to use.
-# Select chat module to use.
-from imps import discord_bot as bot_imp
+
+imp_table = { # Human-friendly names mapped to class locations.
+	"terminal": ("imps.terminal_bot", "TerminalBot"),
+	"discord":  ("imps.discord_bot", "DiscordBot"),
+}
 
 if __name__ == "__main__":
 	usage = "Usage: manage.py <run|kill|keep|make-configs>"
@@ -26,10 +29,20 @@ if __name__ == "__main__":
 			# TODO Properly configure logging.
 			logging.basicConfig(filename="pb.log", level="DEBUG")
 			
+			# Load the implementation chosen in the general config.
+			config_handler.load_config("imp")
+			imp = config_handler.configs["imp"]["implementation"]
+			if imp not in imp_table:
+				print("Unknown implementation: '%s'" % imp)
+				print("Please specify a valid implementation in configs/imp.yml")
+				print("Valid implementations are: " + ", ".join(imp_table.keys()))
+			
+			bot_module, bot_class = imp_table[imp]
+			Bot = getattr(import_module(bot_module), bot_class)
+			
 			while True: # Loop to allow continued running if an exception arises.
 				try:
-					bot = bot_imp.bot()
-					bot.run()
+					Bot().run()
 				
 				except BotRestartException:
 					logging.info("Bot ordered to restart.")
