@@ -40,7 +40,8 @@ class Message:
 	def _parse(self):
 		"""
 		Parse and do whatever work necessary for the message.
-			If the message necessitates a reply, save it to self.reply_msg.
+		
+		If the message necessitates a reply, save it to self.reply_msg.
 		"""
 		
 		com_conf = config_handler.configs["commands"]

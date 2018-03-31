@@ -18,8 +18,7 @@ registered_modules = [
 
 def register_commands():
 	"""
-	Load and register all commands for the bot.
-	Should only be called once per run.
+	Load and register all dynamic commands for the bot.
 	"""
 	
 	dynamic_commands.clear()
@@ -35,7 +34,7 @@ def delegate_command(cmd):
 	Retrieve a callable command from its string name.
 	
 	Args:
-		cmd -- the name of the command to retrieve
+		cmd -- the name of the command to retrieve.
 		
 	Returns: the callable for the desired command.
 
@@ -62,9 +61,9 @@ def validate_command_args(cmd, args, alias=None):
 	Validate the syntax of a set of arguments for the given command callable.
 	
 	Args:
-		cmd ---- The callable command to validate arguments for.
-		args --- The arguments to validate.
-		alias -- The alias that the command was called with. Optional.
+		cmd ---- the callable command to validate arguments for.
+		args --- the arguments to validate.
+		alias -- the alias that the command was called with. Optional.
 	"""
 	
 	cmd_name = alias or cmd.meta["name"]
@@ -80,15 +79,7 @@ class Command:
 	Used as a decorator to define command objects.
 	
 	Attributes:
-		static (bool) ------ If True, this command is static. If False, it is dynamic. Default: False
-		
-		cooldown (number) -- The mimimum time (in seconds) between when a command was last used,
-				and when it can be used again. Default: 5
-				
-		args_val (func) ---- A function to be run and given the list of command arguments as a parameter.
-				When the arguments are syntactically valid for the command, it returns True. False otherwise.
-				
-		args_usage (str) --- A string describing the syntactic form of arguments to this command.
+		meta -- a dictionary of parameters passed on object initialisation.
 	
 	A static command is one which always replies with the same value, regardless of arguments or other context.
 	Static and dynamic commands are disjoint and all-encompassing.
@@ -114,7 +105,7 @@ class Command:
 		Wrap the given command and save it to the command list, if it's dynamic.
 		
 		Args:
-			cmd -- The command to be wrapped.
+			cmd -- the command to be wrapped.
 
 		Returns: The wrapped function.
 		"""

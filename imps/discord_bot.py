@@ -23,6 +23,10 @@ class DiscordBot(Bot):
 
 
 class DiscordMessage(Message):
+	"""
+	A message from a Discord user.
+	"""
+	
 	def __init__(self, msg):
 		self.raw_msg = msg
 		self.text_content = msg.content

@@ -33,7 +33,7 @@ class TerminalMessage(Message):
 	def __init__(self, msg):
 		self.raw_msg = msg
 		self.text_content = msg
-		self.sender_name = "TERMINAL USER"
+		self.sender_name = "TERMINAL"
 		self.reply_msg = None
 		
 		self._parse()
