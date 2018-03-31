@@ -10,11 +10,6 @@ from exceptions import CommandException
 
 dynamic_commands =  {} # command_name:command_func (str:callable)
 
-# Command modules to take commands from.
-registered_modules = [
-	"misc",
-]
-
 
 def register_commands():
 	"""
@@ -24,7 +19,7 @@ def register_commands():
 	dynamic_commands.clear()
 	
 	# TODO Check to see if importing command mods gets fucked up after a bot restart
-	for mod in registered_modules:
+	for mod in configs["commands"]["registered-mods"]:
 		# Just importing the modules will make the commands register themselves, because of @Command.
 		__import__("command_mods." + mod)
 
