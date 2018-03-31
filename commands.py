@@ -21,7 +21,16 @@ def register_commands():
 	# TODO Check to see if importing command mods gets fucked up after a bot restart
 	for mod in configs["commands"]["registered-mods"]:
 		# Just importing the modules will make the commands register themselves, because of @Command.
-		__import__("command_mods." + mod)
+		register_com_mod(mod)
+
+def register_com_mod(mod_name):
+	"""
+	Register a single command module.
+	Args:
+		mod_name -- name of the command module to register.
+	"""
+	
+	__import__("command_mods." + mod_name)
 
 
 def delegate_command(cmd):
