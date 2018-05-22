@@ -46,21 +46,21 @@ if __name__ == "__main__":
 			bot_module, bot_class = imp_table[imp]
 			Bot = getattr(import_module(bot_module), bot_class)
 			
-			while True: # Loop to allow continued running if an exception arises.
-				try:
-					Bot().run()
-				
-				except BotRestartException:
-					logging.info("Bot ordered to restart.")
-					continue
-				
-				except BotShutdownException:
-					logging.info("Bot ordered to shut down.")
-					break
-				
-				except Exception:
-					logging.exception()
-					break
+			try:
+				Bot().run()
+			
+			except BotRestartException:
+				print("Bot restarting")
+				logging.info("Bot ordered to restart.")
+				# First arg is file to run, second arg is C-style name of the command as first argument to process.
+				os.execl("manage.py", "manage.py", arg_nodetach)
+			
+			except BotShutdownException:
+				print("Bot shutting down")
+				logging.info("Bot ordered to shut down.")
+			
+			except Exception as ex:
+				logging.exception("An exception was encountered.")
 		
 		# Run the bot and detach from it immediately.
 		elif command == arg_detach:

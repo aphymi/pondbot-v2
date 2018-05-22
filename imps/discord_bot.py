@@ -44,11 +44,6 @@ class DiscordMessage(Message):
 		self.sender_name = msg.author.name
 		self.reply_msg = None
 		
-		# TODO Move this somewhere less fucky
-		if self.text_content == "!quit":
-			client.logout()
-			raise BotShutdownException
-		
 		self._parse()
 	
 	async def reply(self):
