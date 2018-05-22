@@ -2,6 +2,7 @@
 from importlib import import_module
 import logging
 import os
+import subprocess
 import sys
 
 import config_handler
@@ -12,8 +13,13 @@ imp_table = { # Human-friendly names mapped to class locations.
 	"discord":  ("imps.discord_bot", "DiscordBot"),
 }
 
+arg_detach = "run"
+arg_nodetach = "keep"
+arg_kill =   "kill"
+arg_configs = "make-configs"
+
 if __name__ == "__main__":
-	usage = "Usage: manage.py <run|kill|keep|make-configs>"
+	usage = "Usage: manage.py <{}|{}|{}|{}>".format(arg_detach, arg_nodetach, arg_kill, arg_configs)
 	
 	# sys.argv will look something like ['./manage.py', 'start'],
 	#   so the specified command should be at sys.argv[1]
@@ -24,8 +30,8 @@ if __name__ == "__main__":
 		command = sys.argv[1]
 		
 		# Run the bot, but don't detach from it.
-		#   This way the running terminal will still get sysout.
-		if command == "keep":
+		#   If run by the user, the running terminal will still get sysout.
+		if command == arg_nodetach:
 			# TODO Properly configure logging.
 			logging.basicConfig(filename="pb.log", level="DEBUG")
 			
@@ -57,16 +63,17 @@ if __name__ == "__main__":
 					break
 		
 		# Run the bot and detach from it immediately.
-		elif command == "run":
-			os.system("./manage.py keep &") # TODO Change this to a subprocess call (creationflags=DETACHED_PROCESS)
+		elif command == arg_detach:
+			subprocess.Popen([__file__, arg_nodetach],
+							 stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		
 		# Stop any running instances of the bot.
 		# This should only be used if the bot won't respond to commands.
-		elif command == "kill": # TODO Add a y/n confirmation and warning to kill
-			# TODO Figure out whether this should be run or keep
-			os.system("kill $(ps aux | grep '[m]anage.py run' | awk '{print $2}')")
+		elif command == arg_kill: # TODO Add a y/n confirmation and warning to kill
+			# TODO Find something more specific and less likely to kill other processes.
+			os.system("kill $(ps aux | grep '[m]anage.py keep' | awk '{print $2}')")
 		
-		elif command == "make-configs":
+		elif command == arg_configs:
 			config_handler.make_defaults()
 			pass
 		
