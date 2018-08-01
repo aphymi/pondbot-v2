@@ -1,0 +1,8 @@
+# The bot implementation to use.
+implementation: "terminal"
+
+# Modules that should be notified when a message is received.
+# The order matters; earlier modules can stop propogation to later modules.
+triggers:
+- "commands"
+- "regex"
