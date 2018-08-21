@@ -36,11 +36,11 @@ if __name__ == "__main__":
 			logging.basicConfig(filename="pb.log", level="DEBUG")
 			
 			# Load the implementation chosen in the general config.
-			config_handler.load_config("imp")
-			imp = config_handler.configs["imp"]["implementation"]
+			config_handler.load_config("general")
+			imp = config_handler.configs["general"]["implementation"]
 			if imp not in imp_table:
 				print("Unknown implementation: '%s'" % imp)
-				print("Please specify a valid implementation in configs/imp.yml")
+				print("Please specify a valid implementation in configs/general.yml")
 				print("Valid implementations are: " + ", ".join(imp_table.keys()))
 			
 			bot_module, bot_class = imp_table[imp]
