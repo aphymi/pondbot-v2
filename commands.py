@@ -5,8 +5,8 @@ Manage chat command interactions in the bot.
 import functools
 
 from config_handler import configs
-
 from exceptions import CommandException
+from handlers import messagehandler
 
 dynamic_commands =  {} # command_name:command_func (str:callable)
 
@@ -76,6 +76,28 @@ def validate_command_args(cmd, args, alias=None):
 		raise CommandException("Invalid args. Usage: {prefix}{name} {usage}".format(
 								prefix=configs["commands"]["command-prefix"],
 								name=cmd_name, usage=cmd.meta["args_usage"]))
+
+
+@messagehandler
+def cmd_msg_handler(msg, ctx):
+	com_conf = configs["commands"]
+	
+	if msg.text_content.startswith(com_conf["command-prefix"]):
+		
+		try: # Commands can throw errors, so those should be handled.
+			# Discard the command prefix and split the message into arguments along spaces.
+			components = msg.text_content[len(com_conf["command-prefix"]):].split()
+			cmd_name, args = components[0], components[1:]
+			
+			# Find and run the proper command function.
+			command = delegate_command(cmd_name)
+			validate_command_args(command, args, cmd_name)
+			return command(*args)
+		
+		except CommandException as ex:
+			# If a command threw an error, tell that to the user.
+			return "{user} - That command caused an error: {errmsg}".format(
+						user=msg.sender_name, errmsg=ex.args[0])
 
 
 class Command:

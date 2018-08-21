@@ -1,8 +1,7 @@
 import config_handler
 import commands
+import handlers
 from exceptions import CommandException
-
-# TODO 'Expansions' module? Use to get title and such from YT links.
 
 class Bot:
 	"""
@@ -46,19 +45,7 @@ class Message:
 		
 		com_conf = config_handler.configs["commands"]
 		
-		# Check if the message is a command.
-		if self.text_content.startswith(com_conf["command-prefix"]):
-			try:
-				components = self.text_content[len(com_conf["command-prefix"]):].split()
-				cmd_name, args = components[0], components[1:]
-				
-				command = commands.delegate_command(cmd_name)
-				commands.validate_command_args(command, args, cmd_name)
-				self.reply_msg = command(*args)
-				
-			except CommandException as ex:
-				self.reply_msg = ("{user} - That command caused an error: {errmsg}".format(
-								  	user=self.sender_name, errmsg=ex.args[0]))
+		self.reply_msg = handlers.fire_msg(self)
 		
 		# TODO else check for regex
 		
