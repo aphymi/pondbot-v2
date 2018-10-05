@@ -7,7 +7,7 @@ import sys
 
 from bot import Bot, Message
 from commands import register_com_mod
-import config_handler
+import config
 from exceptions import BotShutdownException, BotRestartException
 
 client = discord.Client()
@@ -19,14 +19,14 @@ class DiscordBot(Bot):
 	
 	def run(self):
 		self.set_up()
-		config_handler.load_config("discord")
+		config.load_config("discord")
 		register_com_mod("discord")
 		
 		# The way discord.py suppresses errors means I need to get a bit janky to maintain exception-based
 		# 	shutdown/restart differentiation. client.stop_err is part of that.
 		client.stop_err = None
 		
-		client.run(config_handler.configs["discord"]["bot-token"])
+		client.run(config.configs["discord"]["bot-token"])
 		
 		# Check if the client stopped because of a control-flow error.
 		if client.stop_err:
@@ -55,8 +55,8 @@ bot = DiscordBot
 
 @client.event
 async def on_ready():
-	await client.send_message(discord.Object(config_handler.configs["discord"]["startup-channel"]),
-							  config_handler.configs["discord"]["startup-msg"])
+	await client.send_message(discord.Object(config.configs["discord"]["startup-channel"]),
+							  config.configs["discord"]["startup-msg"])
 
 @client.event
 async def on_message(msg):

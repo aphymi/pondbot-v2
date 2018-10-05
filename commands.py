@@ -4,7 +4,7 @@ Manage chat command interactions in the bot.
 
 import functools
 
-from config_handler import configs
+from config import configs
 from exceptions import CommandException
 from handlers import messagehandler
 

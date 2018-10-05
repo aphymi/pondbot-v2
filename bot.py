@@ -1,4 +1,4 @@
-import config_handler
+import config
 import commands
 import handlers
 from exceptions import CommandException
@@ -14,7 +14,7 @@ class Bot:
 		Set up implementation-agnostic things.
 		"""
 		
-		config_handler.load_all_configs()
+		config.load_all_configs()
 		commands.register_commands()
 	
 	def run(self):
@@ -43,7 +43,7 @@ class Message:
 		If the message necessitates a reply, save it to self.reply_msg.
 		"""
 		
-		com_conf = config_handler.configs["commands"]
+		com_conf = config.configs["commands"]
 		
 		self.reply_msg = handlers.fire_msg(self)
 		

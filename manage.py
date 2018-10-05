@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 
-import config_handler
+import config
 from exceptions import BotRestartException, BotShutdownException
 
 imp_table = { # Human-friendly names mapped to class locations.
@@ -36,8 +36,8 @@ if __name__ == "__main__":
 			logging.basicConfig(filename="pb.log", level="DEBUG")
 			
 			# Load the implementation chosen in the general config.
-			config_handler.load_config("general")
-			imp = config_handler.configs["general"]["implementation"]
+			config.load_config("general")
+			imp = config.configs["general"]["implementation"]
 			if imp not in imp_table:
 				print("Unknown implementation: '%s'" % imp)
 				print("Please specify a valid implementation in configs/general.yml")
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 			os.system("kill $(ps aux | grep '[m]anage.py keep' | awk '{print $2}')")
 		
 		elif command == arg_configs:
-			config_handler.make_defaults()
+			config.make_defaults()
 			pass
 		
 		# TODO Make a reset-config command to replace a config with the default.

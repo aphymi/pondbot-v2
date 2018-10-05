@@ -8,6 +8,7 @@ import yaml
 
 configs = {}
 
+# TODO Make a separate "reload_config" command, and make load_config only load if it's not yet loaded.
 
 def load_all_configs():
 	"""
