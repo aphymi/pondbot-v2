@@ -11,9 +11,8 @@ import re
 from commands import Command, CommandException
 
 
-
-MAX_ROLL_AMOUNT = 20  # The maximum number of dice that can be rolled in one call to roll().
-MAX_COMPLEX_SIDES = 999 # Maximum sides for a complex roll.
+MAX_ROLL_AMOUNT = 20  # The maximum number of dice that can be rolled in one call to roll(), to prevent spam/slowing.
+MAX_COMPLEX_SIDES = 999 # Maximum sides for a complex roll, to prevent spam.
 mult_roll_re = re.compile(r"^(?P<arg1>\d+)(d(?P<cmplx_sides>\d+)(?P<modifier>[+-]\d+)?)?$")
 
 # Args get joined in order to allow spaces.

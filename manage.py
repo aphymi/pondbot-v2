@@ -33,7 +33,7 @@ if __name__ == "__main__":
 		#   If run by the user, the running terminal will still get sysout.
 		if command == arg_nodetach:
 			# TODO Properly configure logging.
-			logging.basicConfig(filename="pb.log", level="DEBUG")
+			logging.basicConfig(filename="pb.log", level="WARNING")
 			
 			# Load the implementation chosen in the general config.
 			config.load_config("general")

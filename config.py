@@ -8,8 +8,6 @@ import yaml
 
 configs = {}
 
-# TODO Make a separate "reload_config" command, and make load_config only load if it's not yet loaded.
-
 def load_all_configs():
 	"""
 	Load all configuration files.
@@ -18,9 +16,10 @@ def load_all_configs():
 	configs.clear()
 	
 	for file in os.listdir("configs/"):
-		if file.endswith(".yml"):
-			conf = file[:-4] # Truncate the file extension.
-			load_config(conf)
+		# Split the file into the root and its extension.
+		root, ext = os.path.splitext(file)
+		if ext == ".yml":
+			load_config(root)
 	
 		
 def load_config(conf):

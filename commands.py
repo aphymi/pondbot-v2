@@ -4,12 +4,16 @@ Manage chat command interactions in the bot.
 
 import functools
 
-from config import configs
+import config
 from exceptions import CommandException
 from handlers import messagehandler
 
 dynamic_commands =  {} # command_name:command_func (str:callable)
 
+# TODO Enforce cooldowns
+# TODO Truncate individual arguments at 20 characters to avoid stupid values.
+# TODO More elegantly handle preventing stupid values/very long processes.
+# TODO Reload static commands when static cmd config is reloaded?
 
 def register_commands():
 	"""
@@ -18,8 +22,7 @@ def register_commands():
 	
 	dynamic_commands.clear()
 	
-	# TODO Check to see if importing command mods gets fucked up after a bot restart
-	for mod in configs["commands"]["registered-mods"]:
+	for mod in config.configs["commands"]["registered-mods"]:
 		# Just importing the modules will make the commands register themselves, because of @Command.
 		register_com_mod(mod)
 
@@ -44,7 +47,7 @@ def delegate_command(cmd):
 
 	"""
 	
-	com_conf = configs["commands"]
+	com_conf = config.configs["commands"]
 	
 	# Check if the command is an alias for another command.
 	for com in com_conf["aliases"]:
@@ -74,13 +77,13 @@ def validate_command_args(cmd, args, alias=None):
 	
 	if not cmd.meta["args_val"](*args):
 		raise CommandException("Invalid args. Usage: {prefix}{name} {usage}".format(
-								prefix=configs["commands"]["command-prefix"],
+								prefix=config.configs["commands"]["command-prefix"],
 								name=cmd_name, usage=cmd.meta["args_usage"]))
 
 
 @messagehandler
 def cmd_msg_handler(msg, ctx):
-	com_conf = configs["commands"]
+	com_conf = config.configs["commands"]
 	
 	if msg.text_content.startswith(com_conf["command-prefix"]):
 		
@@ -121,7 +124,7 @@ class Command:
 			args_val ------ a callable that returns True if the command arguments are well-formed, or False otherwise.
 			args_usage ---- a string showing the proper syntax for the command arguments.
 			name ---------- the name that this command is called by; by default, the name of the wrapped function.
-			no_perms_msg -- an optional specific message to return if someone uses this command without permission
+			no_perms_msg -- an optional message to return if someone uses this command without the proper permissions.
 		"""
 		
 		self.meta = kwargs

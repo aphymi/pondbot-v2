@@ -8,6 +8,8 @@ class Bot:
 	Abstract class for the chat bot.
 	"""
 	
+	_cur_bot = None
+	
 	@staticmethod
 	def set_up():
 		"""
@@ -23,6 +25,14 @@ class Bot:
 		"""
 		
 		raise NotImplementedError("run() has not been implemented")
+	
+	@classmethod
+	def bot(cls):
+		"""
+		Return the currently running Bot instance.
+		"""
+		
+		return cls._cur_bot
 
 
 class Message:

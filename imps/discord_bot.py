@@ -18,6 +18,7 @@ class DiscordBot(Bot):
 	"""
 	
 	def run(self):
+		DiscordBot._cur_bot = self
 		self.set_up()
 		config.load_config("discord")
 		register_com_mod("discord")
@@ -75,6 +76,6 @@ async def on_error(event, *args, **kwargs):
 		client.stop_err = err[0]
 		await client.logout()
 	
-	# Otherwise, propogate the error immediately.
+	# Otherwise, propogate the error.
 	else:
 		raise err[1]

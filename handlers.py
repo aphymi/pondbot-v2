@@ -9,10 +9,10 @@ def messagehandler(handler_func):
 		msg -- the Message object produced when the bot receives a message.
 		ctx -- any other non-message-specific context, e.g. the Bot object of the current imp.
 	
-	Handlers may modify the msg/ctx args freely, and later-fired handlers will see the changed versions.
+	Handlers may modify the msg/ctx args freely, and later-fired handlers will recieve the changed versions.
 	
-	If a handler returns anything (ususally a string), it is assumed that the handler has fully handled
-		the event, and no further handlers need be called. Such a string will be included in the bot's reply.
+	A handler may return a string, in which case it is assumed that event doesn't need further handling,
+		and no further handlers need be called. The bot will reply to the message with the string.
 	
 	"""
 	
