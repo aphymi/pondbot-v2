@@ -20,7 +20,7 @@ def mc_msg_handler(msg, _):
 			msg.text_content = match["MESSAGE"]
 			rank = match.get("RANK")
 			if rank:
-				for group, ranks in conf["perm-groups"]:
+				for group, ranks in conf["perm-groups"].items():
 					if rank in ranks:
 						msg.sender_group = group
 						break

@@ -35,6 +35,7 @@ class TerminalMessage(Message):
 		self.sender_name = "TERMINAL"
 		self.sender_group = "devs"
 		self.text_content = msg
+		self.reply_msg = None
 		
 		self._parse()
 	

@@ -31,5 +31,4 @@ def group_has_perm(gname, perm):
 		return False
 	if star in perms_list or perm in perms_list:
 		return True
-	import pdb; pdb.set_trace()
 	return False

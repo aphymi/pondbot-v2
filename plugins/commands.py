@@ -102,7 +102,6 @@ def cmd_msg_handler(msg, _):
 				perm = "cmd." + command.meta["name"]
 			
 			if not group_has_perm(msg.sender_group, perm):
-				print(perm)
 				raise CommandException("Insufficient permissions.")
 			
 			validate_command_args(command, args, cmd_name)
