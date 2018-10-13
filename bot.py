@@ -42,10 +42,18 @@ class Message:
 	"""
 	
 	def __init__(self):
+		# Raw data that the bot recieves at an implementation level.
 		self.raw_msg = None
+		# The eventual string that the bot will reply to this message with, if any.
 		self.reply_msg = None
+		# The name of the user that sent this message.
 		self.sender_name = None
+		# Optionally, a user-unique id for the user who sent this message.
+		# Only necessary if sender_name is not necessarily unique for each user.
+		self.sender_id = None
+		# Optionally, the permission group that the user belongs to.
 		self.sender_group = None
+		# The text of the message that the user sent, with any other data stripped.
 		self.text_content = None
 	
 	def _parse(self):

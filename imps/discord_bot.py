@@ -45,6 +45,7 @@ class DiscordMessage(Message):
 		self.raw_msg = msg
 		self.text_content = msg.content
 		self.sender_name = msg.author.name
+		self.sender_id = msg.auth.id
 		
 		for role in [r.id for r in msg.author.roles]:
 			for group, ranks in config.configs["discord"]["perm-groups"]:
