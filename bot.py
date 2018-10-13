@@ -44,8 +44,9 @@ class Message:
 	def __init__(self):
 		self.raw_msg = None
 		self.reply_msg = None
-		self.text_content = None
 		self.sender_name = None
+		self.sender_group = None
+		self.text_content = None
 	
 	def _parse(self):
 		"""

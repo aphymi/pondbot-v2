@@ -7,6 +7,7 @@ import functools
 import config
 from exceptions import CommandException
 from handlers import messagehandler
+from permissions import group_has_perm
 
 dynamic_commands =  {} # command_name:command_func (str:callable)
 
@@ -88,12 +89,22 @@ def cmd_msg_handler(msg, _):
 	if msg.text_content.startswith(com_conf["command-prefix"]):
 		
 		try: # Commands can throw errors, so those should be handled.
+			
 			# Discard the command prefix and split the message into arguments along spaces.
 			components = msg.text_content[len(com_conf["command-prefix"]):].split()
 			cmd_name, args = components[0], components[1:]
 			
 			# Find and run the proper command function.
 			command = delegate_command(cmd_name)
+			if command.meta.get("static"):
+				perm = "cmd.statics"
+			else:
+				perm = "cmd." + command.meta["name"]
+			
+			if not group_has_perm(msg.sender_group, perm):
+				print(perm)
+				raise CommandException("Insufficient permissions.")
+			
 			validate_command_args(command, args, cmd_name)
 			return command(*args)
 		

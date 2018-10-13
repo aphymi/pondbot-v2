@@ -1,0 +1,19 @@
+groups:
+  default:
+    perms:
+    - cmd.statics
+    - cmd.roll
+    - cmd.choose
+
+  staff:
+    inherit:
+    - default
+    perms:
+    - regex.notrigger
+    - cmd.kick
+    - cmd.ban
+
+  devs:
+    perms:
+    - regex.notrigger
+    - cmd.*

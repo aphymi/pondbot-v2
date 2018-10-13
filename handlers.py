@@ -1,6 +1,8 @@
 
 _msg_handlers = []
 
+# TODO Create a config reload handler.
+
 def messagehandler(handler_func):
 	"""
 	Decorator for functions that should be run whenever the bot receives a message.
