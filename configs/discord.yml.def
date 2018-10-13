@@ -6,3 +6,14 @@ startup-channel: ""
 
 # Auth token for the bot.
 bot-token: ""
+
+# Translate from bot permission groups to discord user roles.
+# Note that role ids are used here as opposed to role names, to prevent someone with role managing permission trying
+#   to rename a group below them to something above them, and thus get the role above them's permissions.
+# To get the id of a role, set it to mentionable and then, in chat, send "\@<role name>".
+#   The id will be the 18-digit number between "<&" and ">".
+perm-roles:
+  staff:
+  - 424242424242424242
+  devs:
+  - 123123123123123123
