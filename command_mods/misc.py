@@ -8,7 +8,7 @@ Commands:
 import random
 import re
 
-from commands import Command, CommandException
+from plugins.commands import Command, CommandException
 
 
 MAX_ROLL_AMOUNT = 20  # The maximum number of dice that can be rolled in one call to roll(), to prevent spam/slowing.
@@ -69,3 +69,6 @@ def roll(*args):
 	
 	return result
 
+@Command(cooldown=5, args_val=(lambda *args: len(args) > 1), args_usage="<choice1> <choice2> [choice3]...")
+def choose(*args):
+	return "My choice is: " + random.choice(args)

@@ -2,12 +2,12 @@
 A PondBot implementation for Discord servers.
 """
 
-import discord
 import sys
 
-from bot import Bot, Message
-from commands import register_com_mod
+import discord
+
 import config
+from bot import Bot, Message
 from exceptions import BotShutdownException, BotRestartException
 
 client = discord.Client()
@@ -21,7 +21,9 @@ class DiscordBot(Bot):
 		DiscordBot._cur_bot = self
 		self.set_up()
 		config.load_config("discord")
-		register_com_mod("discord")
+		if "commands" in config.configs["general"]["plugins"]:
+			from plugins.commands import register_com_mod
+			register_com_mod("discord")
 		
 		# The way discord.py suppresses errors means I need to get a bit janky to maintain exception-based
 		# 	shutdown/restart differentiation. client.stop_err is part of that.

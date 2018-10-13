@@ -1,7 +1,6 @@
 import config
-import commands
 import handlers
-from exceptions import CommandException
+
 
 class Bot:
 	"""
@@ -17,7 +16,9 @@ class Bot:
 		"""
 		
 		config.load_all_configs()
-		commands.register_commands()
+		
+		for plugin in config.configs["general"]["plugins"]:
+			__import__("plugins." + plugin)
 	
 	def run(self):
 		"""
@@ -53,11 +54,7 @@ class Message:
 		If the message necessitates a reply, save it to self.reply_msg.
 		"""
 		
-		com_conf = config.configs["commands"]
-		
 		self.reply_msg = handlers.fire_msg(self)
-		
-		# TODO else check for regex
 		
 	def reply(self):
 		"""

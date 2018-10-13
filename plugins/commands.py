@@ -82,7 +82,7 @@ def validate_command_args(cmd, args, alias=None):
 
 
 @messagehandler
-def cmd_msg_handler(msg, ctx):
+def cmd_msg_handler(msg, _):
 	com_conf = config.configs["commands"]
 	
 	if msg.text_content.startswith(com_conf["command-prefix"]):
@@ -151,10 +151,12 @@ class Command:
 		
 		# Don't save static commands to the list
 		if not self.meta.get("static"):
+			if "name" not in self.meta:
+				self.meta["name"] = cmd.__name__
 			# Save it as the given name or, failing that, the name of the function.
-			dynamic_commands[self.meta.get("name") or cmd.__name__] = wrapped_func
+			dynamic_commands[self.meta.get("name")] = wrapped_func
 		
 		return wrapped_func
 
 
-
+register_commands()

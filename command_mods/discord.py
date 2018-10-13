@@ -1,5 +1,5 @@
-from commands import Command
 from exceptions import BotShutdownException, BotRestartException
+from plugins.commands import Command
 
 
 @Command(cooldown=5, args_val=(lambda *args: True), args_usage="")
