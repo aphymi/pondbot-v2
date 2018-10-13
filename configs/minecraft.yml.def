@@ -1,0 +1,13 @@
+# The name of the Minecraft bridge bot.
+mc-bridge-name: "MCBot"
+
+# The message format that the bot uses, as a regex.
+# Should contain the named capture groups 'NAME' and 'MESSAGE', may optionally contain 'RANK'.
+mc-bridge-form: "^<\[(?P<RANK>\w+)\]-?(?P<NAME>[^>]+)>(?P<MESSAGE>.*)$"
+
+# Translation from bot permission groups to bridge RANKs.
+perm-groups:
+  staff:
+  - Mod
+  devs:
+  - Admin
