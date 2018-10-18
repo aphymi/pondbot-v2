@@ -19,6 +19,9 @@ class Bot:
 		
 		for plugin in config.configs["general"]["plugins"]:
 			__import__("plugins." + plugin)
+		
+		# Reload plugins one more time, since all config load handlers should be known by now.
+		config.load_all_configs()
 	
 	def run(self):
 		"""

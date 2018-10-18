@@ -6,14 +6,14 @@ import os
 from shutil import copyfile
 import yaml
 
+from handlers import fire_conf_load
+
 configs = {}
 
 def load_all_configs():
 	"""
 	Load all configuration files.
 	"""
-	
-	configs.clear()
 	
 	for file in os.listdir("configs/"):
 		# Split the file into the root and its extension.
@@ -30,7 +30,10 @@ def load_config(conf):
 	"""
 	
 	with open(os.path.join("configs", (conf + ".yml"))) as file:
-		configs[conf] = yaml.load(file.read())
+		config = yaml.load(file.read())
+	
+	fire_conf_load(config)
+	configs[conf] = config
 
 
 def make_defaults():

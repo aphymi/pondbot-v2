@@ -1,5 +1,5 @@
-
 _msg_handlers = []
+_conf_handlers = {}
 
 # TODO Create a config reload handler.
 
@@ -21,10 +21,9 @@ def messagehandler(handler_func):
 	_msg_handlers.append(handler_func)
 	return handler_func
 
-
 def fire_msg(msg, ctx=None):
 	"""
-	Notify MessageHandlers of an incoming message.
+	Notify messagehandlers of an incoming message.
 	Args:
 		msg -- the Message object associated with the incoming message.
 		ctx -- any other relevant context the handlers should have.
@@ -37,3 +36,39 @@ def fire_msg(msg, ctx=None):
 		rep = handler(msg, ctx)
 		if rep:
 			return rep
+
+
+def confighandler(conf_name):
+	"""
+	Decorator for functions that should run whenever a config is reloaded.
+	
+	All such handlers should accept exactly one argument:
+		new_conf -- the decoded YAML of the new version of the config.
+	
+	Handlers may modify conf freely, and later-fired handlers will recieve the changed version.
+	
+	Args:
+		conf_name:
+
+	Returns:
+
+	"""
+	
+	def confhandler(handler_func):
+		if conf_name not in _conf_handlers:
+			_conf_handlers[conf_name] = []
+		_conf_handlers[conf_name].append(handler_func)
+		return handler_func
+	
+	return confhandler
+	
+def fire_conf_load(conf_name, new_conf):
+	"""
+	Notify confighandlers of a reloaded config.
+	Args:
+		conf_name -- the name of the config being reloaded (e.g. 'general' or 'commands').
+		new_conf --- the decoded YAML of the new version of the config.
+	"""
+	
+	for handler in _conf_handlers.get(conf_name, []):
+		handler(new_conf)
