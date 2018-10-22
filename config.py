@@ -3,6 +3,7 @@ Module to handle loading of configuration files.
 """
 
 import os
+from os.path import join
 from shutil import copyfile
 import yaml
 
@@ -29,7 +30,7 @@ def load_config(conf):
 		conf -- the file to load, without the extension.
 	"""
 	
-	with open(os.path.join("configs", (conf + ".yml"))) as file:
+	with open(join("configs", (conf + ".yml"))) as file:
 		config = yaml.load(file.read())
 	
 	fire_conf_load(config)
@@ -43,9 +44,9 @@ def make_defaults():
 	A default configuration file is defined as having a ".yml.def" extension.
 	"""
 	
-	for file in os.listdir("configs/"):
-		if file.endswith(".yml.def"):
-			conf = file[:-8] # Truncate the file extension.
-			if not os.path.isfile("configs/%s.yml" % conf):
-				# This config doesn't exist, so copy it over.
-				copyfile("configs/%s.yml.def" % conf, "configs/%s.yml" % conf)
+	for file in os.listdir(join("configs", "defs")):
+		root, ext = os.path.splitext(file)
+		if ext == ".def": # If the file is a default file for a config.
+			if not os.path.isfile(join("configs", root)):
+				# If there is no manifested version of the default, create one.
+				copyfile(join("configs", "defs", file), join("configs", root))
