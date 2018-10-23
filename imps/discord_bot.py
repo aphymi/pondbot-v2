@@ -48,10 +48,12 @@ class DiscordMessage(Message):
 		self.sender_name = msg.author.name
 		self.sender_id = msg.author.id
 		
-		for role in [r.id for r in msg.author.roles]:
+		for role in [r.id for r in self.raw_msg.author.roles]:
 			for group, ranks in config.configs["discord"]["perm-roles"].items():
+				# In case ranks weren't made as strings in the config file, convert them to such.
+				ranks = [str(r) for r in ranks]
 				if role in ranks:
-					msg.sender_group = group
+					self.sender_group = group
 					break
 		
 		self._parse()
