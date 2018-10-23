@@ -105,7 +105,9 @@ def cmd_msg_handler(msg, _):
 				raise CommandException("Insufficient permissions.")
 			
 			validate_command_args(command, args, cmd_name)
-			return command(*args)
+			resp = command(*args)
+			if resp:
+				return "{}: {}".format(msg.sender_name, resp)
 		
 		except CommandException as ex:
 			# If a command threw an error, tell that to the user.

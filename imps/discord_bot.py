@@ -42,12 +42,11 @@ class DiscordMessage(Message):
 	"""
 	
 	def __init__(self, msg):
+		super().__init__()
 		self.raw_msg = msg
 		self.text_content = msg.content
 		self.sender_name = msg.author.name
 		self.sender_id = msg.author.id
-		self.sender_group = None
-		self.reply_msg = None
 		
 		for role in [r.id for r in msg.author.roles]:
 			for group, ranks in config.configs["discord"]["perm-roles"].items():

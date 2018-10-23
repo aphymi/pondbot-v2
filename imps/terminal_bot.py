@@ -31,11 +31,11 @@ class TerminalMessage(Message):
 	"""
 	
 	def __init__(self, msg):
+		super().__init__()
 		self.raw_msg = msg
 		self.sender_name = "TERMINAL"
 		self.sender_group = "devs"
 		self.text_content = msg
-		self.reply_msg = None
 		
 		self._parse()
 	

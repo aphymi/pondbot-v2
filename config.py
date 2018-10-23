@@ -33,7 +33,7 @@ def load_config(conf):
 	with open(join("configs", (conf + ".yml"))) as file:
 		config = yaml.load(file.read())
 	
-	fire_conf_load(config)
+	fire_conf_load(conf, config)
 	configs[conf] = config
 
 
