@@ -5,13 +5,13 @@ Manage chat command interactions in the bot.
 import functools
 
 import config
+import cooldown
 from exceptions import CommandException
 from handlers import messagehandler
 from permissions import group_has_perm
 
 dynamic_commands =  {} # command_name:command_func (str:callable)
 
-# TODO Enforce cooldowns
 # TODO Truncate individual arguments at 20 characters to avoid stupid values.
 # TODO More elegantly handle preventing stupid values/very long processes.
 # TODO Reload static commands when static cmd config is reloaded?
@@ -97,10 +97,15 @@ def cmd_msg_handler(msg, _):
 			
 			# Find and run the proper command function.
 			command = delegate_command(cmd_name)
+			name = "cmd." + command.meta["name"]
+			
+			if not cooldown.has_cooled_down(name):
+				return
+			
 			if command.meta["static"]:
 				perm = "cmd.statics"
 			else:
-				perm = "cmd." + command.meta["name"]
+				perm = name
 			
 			# Check that the user has perms.
 			if not group_has_perm(msg.sender_group, perm):
@@ -111,6 +116,7 @@ def cmd_msg_handler(msg, _):
 			validate_command_args(command, args, cmd_name)
 			
 			resp = command(*args)
+			cooldown.set_cooldown(name, command.meta["cooldown"])
 			if resp:
 				return "{}: {}".format(msg.sender_name, resp)
 		
