@@ -1,0 +1,5 @@
+static-cooldown: 45
+
+statics:
+  "what'?s?(?: the)? bot'?s? name": "Pondbot!"
+  "beep": "boop"
