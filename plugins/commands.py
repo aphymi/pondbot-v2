@@ -89,6 +89,7 @@ def cmd_msg_handler(msg, _):
 	if msg.text_content.startswith(com_conf["command-prefix"]):
 		
 		try: # Commands can throw errors, so those should be handled.
+			# TODO Split up this section to make it less blocky.
 			
 			# Discard the command prefix and split the message into arguments along spaces.
 			components = msg.text_content[len(com_conf["command-prefix"]):].split()
@@ -96,15 +97,19 @@ def cmd_msg_handler(msg, _):
 			
 			# Find and run the proper command function.
 			command = delegate_command(cmd_name)
-			if command.meta.get("static"):
+			if command.meta["static"]:
 				perm = "cmd.statics"
 			else:
 				perm = "cmd." + command.meta["name"]
 			
+			# Check that the user has perms.
 			if not group_has_perm(msg.sender_group, perm):
+				if command.meta["no_perms_msg"]:
+					raise CommandException(command.meta["no_perms_msg"])
 				raise CommandException("Insufficient permissions.")
 			
 			validate_command_args(command, args, cmd_name)
+			
 			resp = command(*args)
 			if resp:
 				return "{}: {}".format(msg.sender_name, resp)
@@ -139,7 +144,16 @@ class Command:
 			no_perms_msg -- an optional message to return if someone uses this command without the proper permissions.
 		"""
 		
-		self.meta = kwargs
+		# Provide some defaults for kwargs.
+		self.meta = {
+			"static": False,
+			"cooldown": 5,
+			"args_val": lambda *args: True,
+			"args_usage": "<arguments>",
+			"name": None,
+			"no_perms_msg": None,
+		}
+		self.meta.update(kwargs)
 	
 	def __call__(self, cmd):
 		"""
@@ -153,7 +167,7 @@ class Command:
 		
 		@functools.wraps(cmd)
 		def wrapped_func(*args):
-			if self.meta.get("static"):
+			if self.meta["static"]:
 				# Don't bother passing any received arguments.
 				return cmd()
 			
@@ -162,11 +176,11 @@ class Command:
 		wrapped_func.meta = self.meta
 		
 		# Don't save static commands to the list
-		if not self.meta.get("static"):
-			if "name" not in self.meta:
+		if not self.meta["static"]:
+			if not self.meta["name"]:
 				self.meta["name"] = cmd.__name__
 			# Save it as the given name or, failing that, the name of the function.
-			dynamic_commands[self.meta.get("name")] = wrapped_func
+			dynamic_commands[self.meta["name"]] = wrapped_func
 		
 		return wrapped_func
 
