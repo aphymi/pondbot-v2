@@ -67,8 +67,10 @@ bot = DiscordBot
 
 @client.event
 async def on_ready():
-	await client.send_message(discord.Object(config.configs["discord"]["startup-channel"]),
-							  config.configs["discord"]["startup-msg"])
+	# Send a nice startup message upon joining a channel.
+	if config.configs["discord"].get("startup-msg"):
+		await client.send_message(discord.Object(config.configs["discord"]["default-channel"]),
+								  config.configs["discord"]["startup-msg"])
 
 @client.event
 async def on_message(msg):
@@ -84,6 +86,12 @@ async def on_error(event, *args, **kwargs):
 	err = sys.exc_info()
 	# If it's a shutdown or restart error, log out and save the error for later propgation.
 	if issubclass(err[0], BotShutdownException) or issubclass(err[0], BotRestartException):
+		
+		# Send a parting message when the bot shuts down.
+		if config.configs["discord"].get("shutdown-msg"):
+			await client.send_message(discord.Object(config.configs["discord"]["default-channel"]),
+									  config.configs["discord"]["shutdown-msg"])
+		
 		client.stop_err = err[0]
 		await client.logout()
 	

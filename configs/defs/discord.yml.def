@@ -1,8 +1,9 @@
-# The message the bot should send when it starts up.
+# The messages the bot should send when it starts up/shuts down. Leave blank for none.
 startup-msg: "Salutations!"
+shutdown-msg: "But... I thought you loved me."
 
-# The id for the channel in which to announce that the bot has started. Leave blank for no join announcement.
-startup-channel: ""
+# The id for the channel in which to send messages that aren't replying to a user message.
+default-channel: ""
 
 # Auth token for the bot.
 bot-token: ""
