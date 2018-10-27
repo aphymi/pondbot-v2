@@ -10,6 +10,7 @@ Commands:
 
 import config
 from cooldown import set_cooldown, has_cooled_down, remove_cooldown, _cooldowns as cooldown_list
+from exceptions import BotRestartException, BotShutdownException
 from plugins.commands import Command, CommandException, delegate_command
 
 
@@ -106,3 +107,20 @@ def reload(*configs):
 		config.load_config(conf)
 		
 	return "Config%s reloaded." % ("s" if len(configs) > 1 else "")
+
+
+@Command(args_val=(lambda *args: not args), args_usage="")
+def shutdown():
+	"""
+	Shut down the bot.
+	"""
+	
+	raise BotShutdownException
+
+@Command(args_val=(lambda *args: not args), args_usage="")
+def restart():
+	"""
+	Restart the bot.
+	"""
+	
+	raise BotRestartException

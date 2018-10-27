@@ -15,11 +15,7 @@ class TerminalBot(Bot):
 		self.set_up()
 		
 		while True:
-			msg = input("> ")
-			if msg.lower() == "quit":
-				raise BotShutdownException
-			msg = TerminalMessage(msg)
-			
+			msg = TerminalMessage(input("> "))
 			msg.reply()
 
 bot = TerminalBot
