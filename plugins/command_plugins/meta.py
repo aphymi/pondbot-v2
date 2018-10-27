@@ -1,9 +1,12 @@
 """
-Commands that in some way affect the functionality of the bot.
+Commands that affect the bot's functionality.
 
 Commands:
-	disable <cmds...>
-	enable <cmds...>
+	disable [cmd...]
+	enable [cmd...]
+	reload [conf...]
+	shutdown
+	restart
 """
 # TODO Unify command module docstrings.
 # TODO Change command modules to command plugins, in plugins.commands_plugins
@@ -14,7 +17,7 @@ from exceptions import BotRestartException, BotShutdownException
 from plugins.commands import Command, CommandException, delegate_command
 
 
-@Command()
+@Command(args_usage="[cmd...]")
 def disable(*cmds):
 	"""
 	Disable some or all commands.
@@ -44,7 +47,7 @@ def disable(*cmds):
 		return "Command%s re-enabled." % ("s" if len(cmd_names) > 1 else "")
 
 
-@Command()
+@Command(args_usage="[cmd...]")
 def enable(*cmds):
 	"""
 	Re-enable some or all disabled commands.
@@ -85,7 +88,7 @@ def enable(*cmds):
 	return "Command%s re-enabled." % ("s" if len(cmd_names) > 1 else "")
 
 
-@Command()
+@Command(args_usage="[conf...]")
 def reload(*configs):
 	"""
 	Reload specific config files, or all of them at once.

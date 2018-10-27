@@ -1,8 +1,12 @@
 """
-Miscellaneous commands that aren't for a larger feature of the bot.
+Miscellaneous commands that aren't part of a larger feature of the bot.
 
 Commands:
-
+	roll <sides>|<dice>d<sides>[<+|-><mod>]
+	choose <choice1> <choice2> [choice...]
+	echo <text>
+	welcome <name>
+	temp <degrees> <C|F>
 """
 
 import random
@@ -72,7 +76,7 @@ def roll(*args):
 	return result
 
 
-@Command(args_val=(lambda *args: len(args) > 1), args_usage="<choice1> <choice2> [choice3]...")
+@Command(args_val=(lambda *args: len(args) > 1), args_usage="<choice1> <choice2> [choice...]")
 def choose(*args):
 	"""
 	Randomly choose one of the arguments.

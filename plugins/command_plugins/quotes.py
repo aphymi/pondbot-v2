@@ -1,5 +1,5 @@
 """
-Module for commands that allow saving of memorable quotes.
+Commands that allow saving of memorable quotes.
 
 Commands:
   quote <id>
@@ -62,7 +62,7 @@ load_quote_list()
 
 
 @Command(cooldown=15, args_val=(lambda *args: not args or (len(args) == 1 and args[0].isdigit())),
-		 args_usage="[quote number]")
+		 args_usage="[quote id]")
 def quote(qid=None):
 	"""
 	Print a quote from the quotes list.
@@ -86,7 +86,7 @@ def quote(qid=None):
 	return "Quote #{}: {}".format(qid, quotes[qid]["content"])
 
 
-@Command(args_val=(lambda *args: args), args_usage="<text>")
+@Command(args_val=(lambda *args: args), args_usage="<quote>")
 def addquote(*text):
 	"""
 	Add a quote to the quotes list.
