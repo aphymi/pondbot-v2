@@ -3,6 +3,7 @@ command-prefix: "!"
 
 # Registered command modules here. Note that imp-specific com-mods don't need to be put here.
 registered-mods:
+- meta
 - misc
 
 # Minimum seconds between uses of a single static command.

@@ -61,7 +61,7 @@ def delegate_command(cmd):
 		return (Command(static=True, cooldown=com_conf["statics-cooldown"], name=cmd, args_val=lambda: True)
 				(lambda *args: com_conf["static-commands"][cmd]))
 			
-	raise CommandException("Unknown command")
+	raise CommandException("Unknown command: " + cmd)
 
 
 def validate_command_args(cmd, args, alias=None):
@@ -99,7 +99,8 @@ def cmd_msg_handler(msg, _):
 			command = delegate_command(cmd_name)
 			name = "cmd." + command.meta["name"]
 			
-			if not cooldown.has_cooled_down(name):
+			# If commands are disabled or this particular command hasn't cooled down, stop resolution.
+			if not (cooldown.has_cooled_down("cmds") and cooldown.has_cooled_down(name)):
 				return
 			
 			if command.meta["static"]:
@@ -122,7 +123,7 @@ def cmd_msg_handler(msg, _):
 		
 		except CommandException as ex:
 			# If a command threw an error, tell that to the user.
-			return "{user} - That command caused an error: {errmsg}".format(
+			return "{user}: Error - {errmsg}".format(
 						user=msg.sender_name, errmsg=ex.args[0])
 
 
