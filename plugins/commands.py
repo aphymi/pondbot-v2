@@ -23,7 +23,7 @@ def register_commands():
 	
 	dynamic_commands.clear()
 	
-	for mod in config.configs["commands"]["registered-mods"]:
+	for mod in config.configs["commands"]["registered-cmd-pls"]:
 		# Just importing the modules will make the commands register themselves, because of @Command.
 		register_com_mod(mod)
 
@@ -34,7 +34,7 @@ def register_com_mod(mod_name):
 		mod_name -- name of the command module to register.
 	"""
 	
-	__import__("command_mods." + mod_name)
+	__import__("plugins.command_plugins." + mod_name)
 
 
 def delegate_command(cmd):
