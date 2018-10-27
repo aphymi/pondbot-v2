@@ -8,6 +8,7 @@ Commands:
 # TODO Unify command module docstrings.
 # TODO Change command modules to command plugins, in plugins.commands_plugins
 
+import config
 from cooldown import set_cooldown, has_cooled_down, remove_cooldown, _cooldowns as cooldown_list
 from plugins.commands import Command, CommandException, delegate_command
 
@@ -50,7 +51,7 @@ def enable(*cmds):
 	Has the side effect/feature of immediately finishing the cooldown of included cmds.
 	"""
 	
-	# Don't need to check whether c is cooled down, because removing it won't have any effect anyway if it is.
+	# Don't need to check whether c is cooled down, because removing it won't have any affect anything even if it is.
 	disabled_cmds = filter(lambda c: c.startswith("cmd."),
 						   cooldown_list.keys())  # Accessing private vars is sketchy, but it's useful here.
 	
@@ -77,3 +78,27 @@ def enable(*cmds):
 		remove_cooldown(name)
 	
 	return "Command%s re-enabled." % ("s" if len(cmd_names) > 1 else "")
+
+
+@Command()
+def reload(*configs):
+	"""
+	Reload specific config files, or all of them at once.
+	
+	Args:
+		*configs -- list of configs to reload.
+
+	If *configs is omitted, all config files will be reloaded.
+	"""
+	
+	for conf in configs:
+		if conf not in config.configs:
+			raise CommandException("Unknown config: " + conf)
+	
+	if not configs:
+		configs = config.configs.keys()
+	
+	for conf in configs:
+		config.load_config(conf)
+		
+	return "Config%s reloaded." % ("s" if len(configs) > 1 else "")
