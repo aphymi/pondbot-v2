@@ -42,7 +42,7 @@ class DiscordMessage(Message):
 		super().__init__()
 		self.raw_msg = msg
 		self.text_content = msg.content
-		self.sender_name = msg.author.name
+		self.sender_name = msg.author.display_name
 		self.sender_id = msg.author.id
 		
 		for role in [r.id for r in self.raw_msg.author.roles]:
