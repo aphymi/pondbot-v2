@@ -12,7 +12,6 @@ from permissions import group_has_perm
 
 dynamic_commands =  {} # command_name:command_func (str:callable)
 
-# TODO Truncate individual arguments at 20 characters to avoid stupid values.
 # TODO More elegantly handle preventing stupid values/very long processes.
 # TODO Reload static commands when static cmd config is reloaded?
 
@@ -94,6 +93,9 @@ def cmd_msg_handler(msg, _):
 			# Discard the command prefix and split the message into arguments along spaces.
 			components = msg.text_content[len(com_conf["command-prefix"]):].split()
 			cmd_name, args = components[0], components[1:]
+			
+			# Truncate arguments at 20 characters to avoid stupid values (e.g. !roll 9999999999...)
+			args = [arg[:20] for arg in args]
 			
 			# Find and run the proper command function.
 			command = delegate_command(cmd_name)
