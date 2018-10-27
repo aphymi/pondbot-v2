@@ -72,3 +72,50 @@ def roll(*args):
 @Command(cooldown=5, args_val=(lambda *args: len(args) > 1), args_usage="<choice1> <choice2> [choice3]...")
 def choose(*args):
 	return "My choice is: " + random.choice(args)
+
+
+# This args_val function means that the argument list must not be empty.
+@Command(args_val=(lambda *args: args), args_usage="<text>")
+def echo(*args):
+	"""
+	Repeat back whatever text is given.
+	"""
+	
+	return " ".join(args)
+
+
+@Command(args_val=(lambda *args: args), args_usage="<name>")
+def welcome(*name):
+	"""
+	Welcome a new member of the server.
+	"""
+	
+	# Join the name in case it contains a space.
+	return "Everyone please welcome {} to the server!".format(" ".join(name))
+
+
+# TODO Allow no space in !temp argument, like '36F' for !temp.
+@Command(args_val=(lambda *args: len(args) == 2 and args[1].lower() in ("c", "f")),
+		 args_usage="<degrees> <C|F>")
+def temp(degrees, units):
+	"""
+	Convert between Celsius and Fahrenheit.
+	
+	Args:
+		degrees -- Magnitude of temperature.
+		units ---- Units that degrees are expressed in.
+	"""
+	
+	try:
+		degrees = float(degrees)
+	except ValueError:
+		raise CommandException("Could not parse degrees: %s" % degrees)
+	
+	if units.lower() == "c":
+		return "{} in Celsius is {} in Fahrenheit.".format(degrees, round(degrees*(9/5) + 32, 1))
+	
+	elif units.lower() == "f":
+		return "{} in Fahrenheit is {} in Celsius.".format(degrees, round((degrees-32) * (5/9), 1))
+	
+	else:
+		raise CommandException("Unknown degree format: %s" % units)
