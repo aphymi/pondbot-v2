@@ -1,0 +1,3 @@
+# If true, deleted quotes won't truly be deleted; they'll just be marked as non-displayable, and still be
+#   viewable by looking in the quotes file.
+preserve-deled-qs: true
