@@ -13,7 +13,7 @@ from cooldown import set_cooldown, has_cooled_down, remove_cooldown, _cooldowns 
 from plugins.commands import Command, CommandException, delegate_command
 
 
-@Command(args_val=(lambda *args: args), args_usage="<cmd...>")
+@Command()
 def disable(*cmds):
 	"""
 	Disable some or all commands.
@@ -32,14 +32,18 @@ def disable(*cmds):
 	# Disable individual commands. They might be given by alias, so need to resolve those.
 	cmd_names = []
 	for cmd in cmds:
-		cmd_names.append(delegate_command(cmd).meta["name"])
+		name = delegate_command(cmd).meta["name"]
+		if name == "enable":
+			raise CommandException("Cannot disable the enable command.")
+		
+		cmd_names.append(name)
 	
 	for name in cmd_names:
 		set_cooldown("cmd." + name, forever=True)
 		return "Command%s re-enabled." % ("s" if len(cmd_names) > 1 else "")
 
 
-@Command(args_val=(lambda *args: args), args_usage="<cmd...>")
+@Command()
 def enable(*cmds):
 	"""
 	Re-enable some or all disabled commands.

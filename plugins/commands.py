@@ -100,7 +100,8 @@ def cmd_msg_handler(msg, _):
 			name = "cmd." + command.meta["name"]
 			
 			# If commands are disabled or this particular command hasn't cooled down, stop resolution.
-			if not (cooldown.has_cooled_down("cmds") and cooldown.has_cooled_down(name)):
+			# Either way, *never* disable the 'enable' command.
+			if not (name == "cmd.enable" or (cooldown.has_cooled_down("cmds") and cooldown.has_cooled_down(name))):
 				return
 			
 			if command.meta["static"]:
