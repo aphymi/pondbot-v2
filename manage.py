@@ -69,9 +69,16 @@ if __name__ == "__main__":
 		
 		# Stop any running instances of the bot.
 		# This should only be used if the bot won't respond to commands.
-		elif command == arg_kill: # TODO Add a y/n confirmation and warning to kill
+		elif command == arg_kill:
 			# TODO Find something more specific and less likely to kill other processes.
-			os.system("kill $(ps aux | grep '[m]anage.py keep' | awk '{print $2}')")
+			print("Killing processes may have adverse effects. Only continue if you have no other way to stop the bot.")
+			inp = ""
+			while inp.lower() not in ("y", "n"):
+				inp = input("Are you sure you wish to proceed (y/n)? ")
+			
+			if inp.lower() == "y":
+				os.system("kill $(ps aux | grep '[m]anage.py keep' | awk '{print $2}')")
+				print("Kill attempted.")
 		
 		elif command == arg_configs:
 			config.make_defaults()
