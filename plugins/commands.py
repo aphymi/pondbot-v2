@@ -6,7 +6,7 @@ import functools
 
 import config
 import cooldown
-from exceptions import CommandException
+from exceptions import CommandException, UnknownCommandException
 from handlers import messagehandler
 from permissions import group_has_perm
 
@@ -60,7 +60,7 @@ def delegate_command(cmd):
 		return (Command(static=True, cooldown=com_conf["statics-cooldown"], name=cmd, args_val=lambda: True)
 				(lambda *args: com_conf["static-commands"][cmd]))
 			
-	raise CommandException("Unknown command: " + cmd)
+	raise UnknownCommandException("Unknown command: " + cmd)
 
 
 def validate_command_args(cmd, args, alias=None):
@@ -124,6 +124,14 @@ def cmd_msg_handler(msg, _):
 			if resp:
 				return "{}: {}".format(msg.sender_name, resp)
 		
+		except UnknownCommandException as ex:
+			# TODO Make UnknownCommandException less kludgy.
+			# Only send an error if the config says to.
+			if config.configs["commands"]["err-unknown-cmd"]:
+				return "{user}: Error - {errmsg}".format(
+					user=msg.sender_name, errmsg=ex.args[0])
+			return
+			
 		except CommandException as ex:
 			# If a command threw an error, tell that to the user.
 			return "{user}: Error - {errmsg}".format(

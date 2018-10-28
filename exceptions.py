@@ -10,6 +10,12 @@ class CommandException(Exception):
 	
 	pass
 
+class UnknownCommandException(CommandException):
+	"""
+	Exception to be raised when a user attempts to use a nonexistant command.
+	"""
+	
+	pass
 
 class BotRestartException(Exception):
 	"""

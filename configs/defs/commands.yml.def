@@ -1,6 +1,8 @@
 # Character[s] prepended to a string to make the bot run a command.
 command-prefix: "!"
 
+# Whether or not the bot should give an error message reply when an unknown command is used.
+err-unknown-cmd: false
 # Registered command plugins here. Note that imp-specific plugins don't need to be put here.
 registered-cmd-pls:
 - meta
