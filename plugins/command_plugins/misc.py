@@ -14,6 +14,7 @@ import re
 
 from plugins.commands import Command, CommandException
 
+# TODO !lmgtfy command.
 
 MAX_ROLL_AMOUNT = 20  # The maximum number of dice that can be rolled in one call to roll(), to prevent spam/slowing.
 MAX_COMPLEX_SIDES = 999 # Maximum sides for a complex roll, to prevent spam.

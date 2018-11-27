@@ -1,7 +1,6 @@
 _msg_handlers = []
 _conf_handlers = {}
 
-# TODO Create a config reload handler.
 
 def messagehandler(handler_func):
 	"""

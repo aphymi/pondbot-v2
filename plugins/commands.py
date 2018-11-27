@@ -13,7 +13,9 @@ from permissions import group_has_perm
 dynamic_commands =  {} # command_name:command_func (str:callable)
 
 # TODO More elegantly handle preventing stupid values/very long processes.
-# TODO Reload static commands when static cmd config is reloaded?
+# TODO !quote list and pastebin the quotes json file.
+# TODO !xquote with old list of nexusbot quotes: https://public.ds003.info/xenquotes/
+# TODO Move command cooldowns to a config.
 
 def register_commands():
 	"""
@@ -124,15 +126,11 @@ def cmd_msg_handler(msg, _):
 			if resp:
 				return "{}: {}".format(msg.sender_name, resp)
 		
-		except UnknownCommandException as ex:
-			# TODO Make UnknownCommandException less kludgy.
-			# Only send an error if the config says to.
-			if config.configs["commands"]["err-unknown-cmd"]:
-				return "{user}: Error - {errmsg}".format(
-					user=msg.sender_name, errmsg=ex.args[0])
-			return
-			
 		except CommandException as ex:
+			# Only send an unknown command error if the config says to.
+			if isinstance(ex, UnknownCommandException) and not config.configs["commands"]["err-unknown-cmd"]:
+				return
+			
 			# If a command threw an error, tell that to the user.
 			return "{user}: Error - {errmsg}".format(
 						user=msg.sender_name, errmsg=ex.args[0])

@@ -17,6 +17,7 @@ class UnknownCommandException(CommandException):
 	
 	pass
 
+
 class BotRestartException(Exception):
 	"""
 	Exception to be raised in order to restart the bot.

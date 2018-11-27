@@ -35,6 +35,7 @@ if __name__ == "__main__":
 		#   If run by the user, the running terminal will still get sysout.
 		if command == arg_nodetach:
 			# TODO Properly configure logging.
+			# TODO Turn off all library logging.
 			logging.basicConfig(filename="pb.log", level="WARNING")
 			
 			# Load the implementation chosen in the general config.
@@ -74,11 +75,11 @@ if __name__ == "__main__":
 		elif command == arg_kill:
 			# TODO Find something more specific and less likely to kill other processes.
 			print("Killing processes may have adverse effects. Only continue if you have no other way to stop the bot.")
-			inp = ""
-			while inp.lower() not in ("y", "n"):
-				inp = input("Are you sure you wish to proceed (y/n)? ")
+			confirm = ""
+			while confirm.lower() not in ("y", "n"):
+				confirm = input("Are you sure you wish to proceed (y/n)? ")
 			
-			if inp.lower() == "y":
+			if confirm.lower() == "y":
 				os.system("kill $(ps aux | grep '[m]anage.py keep' | awk '{print $2}')")
 				print("Kill attempted.")
 		
