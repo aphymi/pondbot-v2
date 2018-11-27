@@ -7,6 +7,7 @@ import datetime
 _cooldowns = {}
 # TODO Stop cooldowns dict from growing indefinitely.
 # 	Clear out olds every time set_cooldown is called? Do it every minute?
+# TODO Trie-based cooldowns.
 
 
 def has_cooled_down(key):
