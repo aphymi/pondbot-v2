@@ -4,6 +4,7 @@ import logging
 import os
 import subprocess
 import sys
+import unittest
 
 import config
 from exceptions import BotRestartException, BotShutdownException
@@ -17,6 +18,7 @@ arg_detach = "run"
 arg_nodetach = "keep"
 arg_kill =   "kill"
 arg_configs = "make-configs"
+arg_runtests = "test"
 
 if __name__ == "__main__":
 	usage = "Usage: manage.py <{}|{}|{}|{}>".format(arg_detach, arg_nodetach, arg_kill, arg_configs)
@@ -82,10 +84,11 @@ if __name__ == "__main__":
 		
 		elif command == arg_configs:
 			config.make_defaults()
-			pass
 		
-		# TODO Make a reset-config command to replace a config with the default.
-		
+		elif command == arg_runtests:
+			unittest.TextTestRunner(stream=sys.stdout) \
+				.run(unittest.defaultTestLoader.discover("tests")) # Look for all tests in the 'tests' package.
+			
 		else:
 			print("Unknown command.")
 			print(usage)
