@@ -96,16 +96,6 @@ def echo(*args):
 	return " ".join(args)
 
 
-@Command(args_val=(lambda *args: args), args_usage="<name>")
-def welcome(*name):
-	"""
-	Welcome a new member of the server.
-	"""
-	
-	# Join the name in case it contains a space.
-	return "Everyone please welcome {} to the server!".format(" ".join(name))
-
-
 # TODO Allow no space in !temp argument, like '36F' for !temp.
 @Command(args_val=(lambda *args: len(args) == 2 and args[1].lower() in ("c", "f")),
 		 args_usage="<degrees> <C|F>")
