@@ -20,7 +20,7 @@ def compose_regexes(conf):
 	_regexes.clear()
 	regs, _resps[:] = conf["statics"].keys(), conf["statics"].values()
 
-	_regexes.append(re.compile("|".join(["(%s)" % s for s in regs])))
+	_regexes.append(re.compile("|".join(["(%s)" % s for s in regs]), flags=re.IGNORECASE))
 
 @messagehandler
 def regex_msg_handler(msg, _):
