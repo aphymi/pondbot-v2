@@ -76,7 +76,16 @@ class PermNode:
 		return "PermNode(name=%s, tvalue=%s%s)" % (self.formatted_name, "*" if self.wildcard else "", self.tvalue)
 	
 	__repr__ = __str__
-
+	
+	def __eq__(self, other):
+		return all([getattr(self, attr) == getattr(other, attr) for attr in ("name", "root",
+																			 "tvalue", "wildcard",
+																			 "group_lvl", "children")])
+	
+	@classmethod
+	def new(cls):
+		return cls(root=True)
+	
 	def is_terminal(self):
 		"""
 		Return True if this is a terminal node, and False otherwise.
@@ -110,7 +119,7 @@ class PermNode:
 				break # Wildcards should only every be the last node in a perm, but just in case.
 			
 			# If the current perm node isn't in the trie node's children, make it.
-			if name not in cur.children:
+			if name not in cur.children.keys():
 				cur.children[name] = PermNode(name=name, group_lvl=group_lvl)
 				
 			# Otherwise, change the group_lvl to the lower of the two.
@@ -121,7 +130,7 @@ class PermNode:
 
 		cur.tvalue = tvalue
 
-	def merge(self, onode):
+	def merge(self, other):
 		"""
 		Recursively merge another permission trie with self.
 		
@@ -129,24 +138,24 @@ class PermNode:
 			one with the higher group priority.
 		
 		Args:
-			onode -- the trie to merge with self.
+			other -- the trie to merge with self.
 		"""
 		
-		# Use onode's tvalue if self isn't terminal or onode has a higher priority.
-		if not self.is_terminal() or (onode.is_terminal() and self.group_lvl > onode.group_lvl):
-			self.tvalue = onode.tvalue
+		# Use other's tvalue if self isn't terminal or other has a higher priority.
+		if not self.is_terminal() or (other.is_terminal() and self.group_lvl > other.group_lvl):
+			self.tvalue = other.tvalue
 		
-		self.wildcard = self.wildcard or onode.wildcard
+		self.wildcard = self.wildcard or other.wildcard
 
 		# Merge the children together.
-		for name in onode.children:
+		for name in other.children:
 			# If there's already an equivalent node in self, merge the two.
 			if name in self.children:
-				self.children[name].merge(onode.children[name])
+				self.children[name].merge(other.children[name])
 			
 			# Otherwise, just adopt it.
 			else:
-				self.children[name] = onode.children[name]
+				self.children[name] = other.children[name]
 	
 	def has_perm(self, perm):
 		"""
