@@ -1,6 +1,7 @@
 import config
-import handlers
+from handlers import MessageHandler
 
+# TODO Some kind of setup_handler? For stuff that needs to be done on bot startup, like loading data files.
 
 class Bot:
 	"""
@@ -66,7 +67,7 @@ class Message:
 		If the message necessitates a reply, save it to self.reply_msg.
 		"""
 		
-		self.reply_msg = handlers.fire_msg(self)
+		self.reply_msg = MessageHandler.fire_handlers(self)
 		
 	def reply(self):
 		"""

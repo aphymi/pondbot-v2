@@ -15,7 +15,7 @@ import random
 
 import config
 from exceptions import CommandException
-from handlers import confighandler
+from handlers import ConfigLoadHandler
 from plugins.commands import Command
 
 
@@ -33,8 +33,8 @@ quotes = {}
 # String path to the used quotes file
 QUOTES_FILE = os.path.join(os.path.dirname(__file__), "quotes.json")
 
-@confighandler("quotes")
-def load_quote_list(_=None):
+@ConfigLoadHandler("quotes")
+def load_quote_list(_):
 	"""
 	Load the quotes from the quote file and save them as quote_list.
 	"""

@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from handlers import confighandler
+from handlers import ConfigLoadHandler
 
 
 # TODO Add a config option to specify a default group.
@@ -210,7 +210,7 @@ class PermNode:
 
 perm_groups = {}
 
-@confighandler("permissions")
+@ConfigLoadHandler("permissions")
 def validate_perm_groups(conf):
 	groups = conf["groups"]
 	
@@ -282,7 +282,7 @@ def make_perm_trie(groups_conf, group):
 		
 		trie.merge(gt)
 
-@confighandler("permissions")
+@ConfigLoadHandler("permissions")
 def construct_perm_tries(conf):
 	
 	# Clear the perm groups, in case this is a reload.

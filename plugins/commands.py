@@ -7,7 +7,7 @@ import functools
 import config
 import cooldown
 from exceptions import CommandException, UnknownCommandException
-from handlers import messagehandler
+from handlers import MessageHandler
 from permissions import group_has_perm
 
 dynamic_commands =  {} # command_name:command_func (str:callable)
@@ -83,8 +83,8 @@ def validate_command_args(cmd, args, alias=None):
 								name=cmd_name, usage=cmd.meta["args_usage"]))
 
 
-@messagehandler
-def cmd_msg_handler(msg, _):
+@MessageHandler
+def cmd_msg_handler(msg):
 	com_conf = config.configs["commands"]
 	
 	if msg.text_content.startswith(com_conf["command-prefix"]):

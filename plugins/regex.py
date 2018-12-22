@@ -6,7 +6,7 @@ import re
 
 import config
 import cooldown
-from handlers import confighandler, messagehandler
+from handlers import MessageHandler, ConfigLoadHandler
 from permissions import group_has_perm
 
 # _regexes is a list containing a single re, instead of just a straight re,
@@ -15,15 +15,15 @@ _regexes = []
 _resps = []
 
 
-@confighandler("regex")
-def compose_regexes(conf):
+@ConfigLoadHandler("regex")
+def compose_regexes(new_conf):
 	_regexes.clear()
-	regs, _resps[:] = conf["statics"].keys(), conf["statics"].values()
+	regs, _resps[:] = new_conf["statics"].keys(), new_conf["statics"].values()
 
 	_regexes.append(re.compile("|".join(["(%s)" % s for s in regs]), flags=re.IGNORECASE))
 
-@messagehandler
-def regex_msg_handler(msg, _):
+@MessageHandler
+def regex_msg_handler(msg):
 	if not group_has_perm(msg.sender_group, "regex.trigger"):
 		return
 	m = _regexes[0].match(msg.text_content)

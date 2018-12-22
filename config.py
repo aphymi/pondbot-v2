@@ -7,7 +7,7 @@ from os.path import join
 from shutil import copyfile
 import yaml
 
-from handlers import fire_conf_load
+from handlers import ConfigLoadHandler
 
 configs = {}
 
@@ -33,7 +33,7 @@ def load_config(conf):
 	with open(join("configs", (conf + ".yml"))) as file:
 		config = yaml.load(file.read())
 	
-	fire_conf_load(conf, config)
+	ConfigLoadHandler.fire_handlers(conf, config)
 	configs[conf] = config
 
 

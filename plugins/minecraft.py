@@ -5,10 +5,10 @@ Translate messages from a Minecraft bridge to the bot's format.
 import re
 
 import config
-from handlers import messagehandler
+from handlers import MessageHandler
 
-@messagehandler
-def mc_msg_handler(msg, _):
+@MessageHandler
+def mc_msg_handler(msg):
 	conf = config.configs["minecraft"]
 	
 	sender = msg.sender_id or msg.sender_name
