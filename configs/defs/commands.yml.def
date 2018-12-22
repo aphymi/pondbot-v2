@@ -21,3 +21,10 @@ aliases:
   roll:
   - dice
   - random
+
+# Prepend the name of the user who triggered the command to the response?
+prepend-name: true
+
+# Exceptions to the above rule; if the above is true, the below will act like it's false, and vice versa.
+prepend-exceptions:
+- regex

@@ -127,7 +127,11 @@ def cmd_msg_handler(msg):
 			resp = command(*args)
 			cooldown.set_cooldown(name, command.meta["cooldown"])
 			if resp:
-				return "{}: {}".format(msg.sender_name, resp)
+				# XOR
+				if com_conf["prepend-name"] != (command.meta["name"] in com_conf["prepend-exceptions"]):
+					resp = "{name}: {resp}".format(name=msg.sender_name, resp=resp)
+					
+				return resp
 		
 		except CommandException as ex:
 			# Only send an unknown command error if the config says to.
