@@ -121,6 +121,9 @@ def cmd_msg_handler(msg):
 			
 			validate_command_args(command, args, cmd_name)
 			
+			if command.meta["pass_msg"]:
+				args = [msg] + args
+				
 			resp = command(*args)
 			cooldown.set_cooldown(name, command.meta["cooldown"])
 			if resp:
@@ -158,6 +161,7 @@ class Command:
 			args_usage ---- a string showing the proper syntax for the command arguments.
 			name ---------- the name that this command is called by; by default, the name of the wrapped function.
 			no_perms_msg -- an optional message to return if someone uses this command without the proper permissions.
+			pass_msg ------ whether to pass the Message object that triggered this command to the command function.
 		"""
 		
 		# Provide some defaults for kwargs.
@@ -168,6 +172,7 @@ class Command:
 			"args_usage": "<arguments>",
 			"name": None,
 			"no_perms_msg": None,
+			"pass_msg": False
 		}
 		self.meta.update(kwargs)
 	

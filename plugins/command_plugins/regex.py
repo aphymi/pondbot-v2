@@ -11,7 +11,7 @@ def regex(msg, *args):
 	msg.text_content = " ".join(args)
 	msg.sender_group = "default" # TODO Make this not an awful hack.
 	
-	resp = regex_msg_handler(msg, None)
+	resp = regex_msg_handler(msg)
 	
 	if not resp:
 		raise CommandException("No regex found.")
