@@ -30,7 +30,7 @@ class TerminalMessage(Message):
 		super().__init__()
 		self.raw_msg = msg
 		self.sender_name = "TERMINAL"
-		self.sender_group = "devs"
+		self.sender_group = "default"
 		self.text_content = msg
 		
 		self._parse()

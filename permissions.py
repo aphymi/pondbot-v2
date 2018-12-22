@@ -293,6 +293,9 @@ def construct_perm_tries(conf):
 
 			
 def group_has_perm(group, perm):
+	if group is None: # Give the default group if no other is specified.
+		group = "default"
+	
 	# If the user somehow has a non-specified permission group, assume false.
 	if group not in perm_groups:
 		return False

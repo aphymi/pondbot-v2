@@ -58,8 +58,6 @@ def write_quotes():
 	with open(QUOTES_FILE, "w") as file:
 		json.dump(quotes, file, indent="\t")
 
-load_quote_list()
-
 
 @Command(cooldown=15, args_val=(lambda *args: not args or (len(args) == 1 and args[0].isdigit())),
 		 args_usage="[quote id]")
