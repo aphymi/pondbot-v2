@@ -11,6 +11,7 @@ Commands:
 
 import random
 import re
+from urllib.parse import urlencode
 
 from plugins.commands import Command, CommandException
 
@@ -121,3 +122,7 @@ def temp(degrees, units):
 	
 	else:
 		raise CommandException("Unknown degree format: %s" % units)
+
+@Command(args_val=(lambda *args: args), args_usage="<search term>")
+def lmgtfy(*search):
+	return "http://lmgtfy.com?" + urlencode({"q": " ".join(search)})
