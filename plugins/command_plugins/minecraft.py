@@ -1,3 +1,5 @@
+import requests
+
 from plugins.commands import Command
 
 @Command(args_val=(lambda *args: args), args_usage="<name>")
@@ -46,3 +48,24 @@ def items(stacks):
 				items=items,
 				splur="" if stacks == 1 else "s",
 				iplur="" if items == 1 else "s")
+
+
+@Command(args_val=(lambda *args: not args), args_usage="")
+def mcstatus():
+	"""
+	Check the status of Mojang's servers.
+	"""
+	
+	server_status = requests.get("http://status.mojang.com/check").json()
+	
+	# Mojang's status API has a weird format. Instead of a single multi-key dict,
+	#   it's an array of single-key dictionaries. This makes the dict comprehension look weird.
+	bads = [list(servstat.keys())[0]
+			for servstat in server_status
+			if list(servstat.values())[0] != "green"]
+	
+	if bads:
+		return "Possibly down: {}".format(", ".join(bads))
+	
+	else:
+		return "All Mojang servers are up."
