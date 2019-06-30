@@ -3,3 +3,4 @@ __pycache__/
 configs/*.yml
 pb.log
 quotes.json
+.vscode/
