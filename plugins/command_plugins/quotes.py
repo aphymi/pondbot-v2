@@ -8,6 +8,7 @@ Commands:
   resquote <id...>
 """
 
+import copy
 from datetime import datetime
 import json
 import os
@@ -26,7 +27,7 @@ The quote list is a dict with unique (linearly-generated) ids as the keys
 content -- The literal quotation.
 date ----- The date that the quote was added to the list.
 display -- Optional boolean to indicate whether a quote should be publicly displayed.
-               If 'preserve-deled-qs' is set to true, this property is set to false whe a quote is deleted.
+               If 'preserve-deled-qs' is set to true, this property is set to false when a quote is deleted.
 """
 quotes = {}
 
@@ -57,6 +58,22 @@ def write_quotes():
 	
 	with open(QUOTES_FILE, "w") as file:
 		json.dump(quotes, file, indent="\t")
+	
+	out_file = config.configs["quotes"]["quotelist"]["file"]
+	if out_file is not None:
+		quotes_clone = copy.deepcopy(quotes)
+		
+		for qid in list(quotes_clone.keys()):
+			# Don't output any quotes that shouldn't be displayed.
+			if not quotes_clone[qid]["display"]:
+				del quotes_clone[qid]
+			
+			# Don't show the 'display' key in the output.
+			else:
+				del quotes_clone[qid]["display"]
+		
+		with open(out_file, "w") as file:
+			json.dump(quotes_clone, file, indent="\t")
 
 
 @Command(cooldown=15, args_val=(lambda *args: not args or (len(args) == 1 and args[0].isdigit())),
@@ -158,3 +175,17 @@ def resquote(*nums):
 	write_quotes()
 	return "Quote{} restored: {}".format("s" if len(nums) > 1 else "",
 										", ".join("#"+str(num) for num in nums))
+
+@Command(args_val=(lambda *args: not args), args_usage="")
+def quotelist(args=None):
+	"""
+	Get a link to the quote list, if such has been configured.
+	"""
+
+	url = config.configs["quotes"]["quotelist"]["url"]
+
+	if url is None:
+		return "Sorry! The quotelist command is disabled. Configure it in configs/quotes.yml to enable it."
+	
+	else:
+		return url

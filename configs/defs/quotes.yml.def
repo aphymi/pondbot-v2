@@ -1,3 +1,13 @@
 # If true, deleted quotes won't truly be deleted; they'll just be marked as non-displayable, and still be
 #   viewable by looking in the quotes file.
 preserve-deled-qs: true
+
+# Configuration options for !quotelist
+# Both must be non-null for the command to function.
+quotelist:
+
+  # The local file to save quotes to, preferably in a web-exposed directory.
+  file: "/path/to/exposed_dir/bot_quotes.json"
+
+  # The URL at which the quotes file can be accessed.
+  url: "http://localhost/exposed_dir/bot_quotes.json"
