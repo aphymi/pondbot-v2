@@ -156,7 +156,7 @@ def cmd_msg_handler(msg):
 			if resp:
 				# XOR
 				prepend_name = (
-					com_conf["prepend_name"]
+					com_conf["prepend-name"]
 					!= (command.meta["name"] in com_conf["prepend-exceptions"])
 				)
 				if prepend_name:
