@@ -63,7 +63,7 @@ def delegate_command(cmd):
 			static=True,
 			cooldown=com_conf["statics-cooldown"],
 			name=cmd,
-			args_val=lambda: True,
+			args_val=lambda *args: True,
 		)
 		return StaticCommand(
 			lambda *args: com_conf["static-commands"][cmd],
