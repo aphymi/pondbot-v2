@@ -17,16 +17,32 @@ _resps = []
 
 @ConfigLoadHandler("regex")
 def compose_regexes(new_conf):
+	"""
+	Compose the set of regexes from the config.
+	"""
+	
 	_regexes.clear()
 	regs, _resps[:] = new_conf["statics"].keys(), new_conf["statics"].values()
 
-	_regexes.append(re.compile("|".join(["(%s)" % s for s in regs]), flags=re.IGNORECASE))
+	_regexes.append(
+		re.compile(
+			"|".join(f"({s})" for s in regs),
+			flags=re.IGNORECASE,
+		),
+	)
+
 
 @MessageHandler
 def regex_msg_handler(msg):
+	"""
+	Trigger regex responses on appropriate messages.
+	"""
+	
 	if not group_has_perm(msg.sender_group, "regex.trigger"):
 		return
+	
 	m = _regexes[0].match(msg.text_content)
+	
 	if m:
 		# Find which regex got matched.
 		ind = None
@@ -35,7 +51,10 @@ def regex_msg_handler(msg):
 				break
 
 		# ind now equals the index of the first non-None value.
-		cdk = "regex.%s" % ind
+		cdk = f"regex.{ind}"
 		if cooldown.has_cooled_down(cdk):
-			cooldown.set_cooldown(cdk, config.configs["regex"]["static-cooldown"])
-			return "{} - {}".format(msg.sender_name, _resps[ind])
+			cooldown.set_cooldown(
+				cdk,
+				config.configs["regex"]["static-cooldown"],
+			)
+			return f"{msf.sender_name} - {_resps[ind]}"

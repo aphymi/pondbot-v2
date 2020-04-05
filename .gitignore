@@ -1,6 +1,6 @@
 __pycache__/
-.idea/
 configs/*.yml
 pb.log
 quotes.json
 .vscode/
+.mypy_cache/

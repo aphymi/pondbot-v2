@@ -9,64 +9,110 @@ class TestPermTrie(TestCase):
 	
 	def test_trie_simple_eq(self):
 		self.assertTrue(PermNode(root=True) == PermNode(root=True))
-		self.assertTrue(PermNode("a", tvalue=False) == PermNode("a", tvalue=False))
-		self.assertFalse(PermNode("a", tvalue=True) == PermNode("a", tvalue=False))
+		self.assertTrue(
+			PermNode("a", tvalue=False) == PermNode("a", tvalue=False)
+		)
+		self.assertFalse(
+			PermNode("a", tvalue=True) == PermNode("a", tvalue=False)
+		)
 	
 	def test_add_perm_to_empty_trie(self):
 		added_trie = PermNode.new()
 		added_trie.add_perm("a")
-		self.assertEquals(added_trie, PermNode(root=True, children={
-												"a": PermNode("a", tvalue=True)}
-											   ))
+		self.assertEquals(
+			added_trie,
+			PermNode(
+				root=True,
+				children={
+					"a": PermNode("a", tvalue=True),
+				},
+			),
+		)
 		
 		added_trie = PermNode.new()
 		added_trie.add_perm("a.b.c")
-		manual_trie = PermNode(root=True, children={
-								"a": PermNode("a", children={
-									"b": PermNode("b", children={
-										"c": PermNode("c", tvalue=True)
-									})
-								})
-							})
+		manual_trie = PermNode(
+			root=True,
+			children={
+				"a": PermNode(
+					"a",
+					children={
+						"b": PermNode(
+							"b",
+							children={
+								"c": PermNode("c", tvalue=True)
+							},
+						),
+					},
+				),
+			},
+		)
 		
 		self.assertEquals(added_trie, manual_trie)
 	
 	def test_add_perm_to_nonempty_trie(self):
 		added_trie = PermNode(root=True, children={"a": PermNode("a")})
 		added_trie.add_perm("a.b")
-		manual_trie = PermNode(root=True, children={
-							   "a": PermNode("a", children={
-								   "b": PermNode("b", tvalue=True)
-							   })
-							})
+		manual_trie = PermNode(
+			root=True,
+			children={
+				"a": PermNode(
+					"a",
+					children={
+						"b": PermNode("b", tvalue=True)
+					},
+				),
+			},
+		)
 		
 		self.assertEquals(added_trie, manual_trie)
 
 		added_trie = PermNode(root=True, children={"a": PermNode("a")})
 		added_trie.add_perm("c.d")
-		manual_trie = PermNode(root=True, children={
-							   "a": PermNode("a"),
-							   "c": PermNode("c", children={
-								   "d": PermNode("d", tvalue=True)
-							   })
-							})
+		manual_trie = PermNode(
+			root=True,
+			children={
+				"a": PermNode("a"),
+				"c": PermNode(
+					"c",
+					children={
+						"d": PermNode("d", tvalue=True)
+					},
+				),
+			},
+		)
 		
 		self.assertEquals(added_trie, manual_trie)
 	
 	def test_add_negative_perm(self):
 		added_trie = PermNode.new()
 		added_trie.add_perm("-a")
-		self.assertEquals(added_trie, PermNode(root=True, children={"a": PermNode("a", tvalue=False)}))
+		self.assertEquals(
+			added_trie,
+			PermNode(
+				root=True,
+				children={"a": PermNode("a", tvalue=False)},
+			),
+		)
 		
 		added_trie = PermNode.new()
 		added_trie.add_perm("-a.b.c")
-		manual_trie = PermNode(root=True, children={
-							   "a": PermNode("a", children={
-								   "b": PermNode("b", children={
-									   "c": PermNode("c", tvalue=False)
-								   })
-							   })
-							})
+		manual_trie = PermNode(
+			root=True,
+			children={
+				"a": PermNode(
+					"a",
+					children={
+						"b": PermNode(
+							"b",
+							children={
+								"c": PermNode("c", tvalue=False)
+							},
+						),
+					},
+				),
+			},
+		)
 		
 		self.assertEquals(added_trie, manual_trie)
 		
@@ -113,12 +159,16 @@ class TestPermTrie(TestCase):
 class TestGroupPermissions(TestCase):
 	
 	def assertGHP(self, group, perm):
-		self.assertTrue(permissions.group_has_perm(group, perm),
-		                msg="Group '{}' does not have perm '{}', but should.".format(group, perm))
+		self.assertTrue(
+			permissions.group_has_perm(group, perm),
+			msg=f"Group '{group}' does not have perm '{perm}', but should.",
+		)
 	
 	def assertNotGHP(self, group, perm):
-		self.assertFalse(permissions.group_has_perm(group, perm),
-		                 msg="Group '{}' has perm '{}', but should not.".format(group, perm))
+		self.assertFalse(
+			permissions.group_has_perm(group, perm),
+			msg=f"Group '{group}' has perm '{perm}', but should not."
+		)
 	
 	@classmethod
 	def setUpClass(cls):

@@ -94,7 +94,13 @@ class TestConfigLoadHandler(TestCase):
 		
 	def test_malformed_conf_raises_error(self):
 		ConfigLoadHandler(confA)(cl_val_data)
-		self.assertRaisesRegex(Exception, "badkey", self.fire, confA, ["badkey"])
+		self.assertRaisesRegex(
+			Exception,
+			"badkey",
+			self.fire,
+			confA,
+			["badkey"]
+		)
 	
 	def test_handler_gets_run(self):
 		ConfigLoadHandler(confA)(cl_set_external_var("var"))
@@ -115,7 +121,13 @@ class TestConfigLoadHandler(TestCase):
 		ConfigLoadHandler(confA)(cl_modify_conf)
 		ConfigLoadHandler(confA)(cl_error_if_nonempty_conf)
 		self.assertNotIn("newkey", conf)
-		self.assertRaisesRegex(Exception, "isn't empty", self.fire, confA, conf)
+		self.assertRaisesRegex(
+			Exception,
+			"isn't empty",
+			self.fire,
+			confA,
+			conf,
+		)
 	
 	def test_only_conf_specific_handlers_are_called_when_handlers_fired(self):
 		ConfigLoadHandler(confA)(cl_set_external_var("var1"))

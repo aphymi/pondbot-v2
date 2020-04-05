@@ -1,21 +1,24 @@
 """
-Classes for handler decorators. TODO Make this not awful.
+Classes for handler decorators.
 """
 
 
 class Handler:
 	"""
-	Abstract class for decorating functions to handle certain events, and firing them when relevant.
+	Abstract class for decorating functions to handle certain events.
 
 	Attrs:
-		dec_takes_args -- boolean of whether a given Handler subclass takes arguments in its decorator.
+		dec_takes_args: boolean of whether a given Handler subclass takes
+			arguments in its decorator.
 	
-	For example, if NoArgsHandler has dec_takes_args set to False, it would be used like so,
+	For example, if NoArgsHandler has dec_takes_args set to False, it would be
+	used like:
 	@NoArgsHandler
 	def foo():
 		bar
 	
-	whereas if ArgsHandler has dec_takes_args set to True, it would be used instead like
+	whereas if ArgsHandler has dec_takes_args set to True, it would be used
+	instead like:
 	@ArgsHandler("argument", "another arg")
 	def baz():
 		bork
@@ -27,9 +30,14 @@ class Handler:
 	
 	@staticmethod
 	def __new__(cls, *args, **kwargs):
-		# The only purpose of the decorator is to add the function to the handler list,
-		#   so creation of an actual object is not necessary when the decorator is applied
-		#   directly, without arguments. Add the handler to the list and return it unchanged.
+		"""
+		Create a new object.
+		"""
+		
+		# The only purpose of the decorator is to add the function to the
+		# handler list, so creation of an actual object is not necessary when
+		# the decorator is applied directly, without arguments. Add the handler
+		# to the list and return it unchanged.
 		if not cls.dec_takes_args:
 			# Only possible first argument is the handler.
 			cls.add_handler(args[0], *args[1:], **kwargs)
@@ -48,6 +56,10 @@ class Handler:
 		self.initkwargs = kwargs
 
 	def __call__(self, func):
+		"""
+		Call the instance.
+		"""
+		
 		# Add the handler to the list and return it unchanged.
 		assert self.dec_takes_args
 		self.add_handler(func, *self.initargs, **self.initkwargs)
@@ -56,7 +68,7 @@ class Handler:
 	@classmethod
 	def add_handler(cls, *args, **kwargs):
 		"""
-		Default implementation; append the passed handler to the list.
+		Append the passed handler to the list.
 		"""
 
 		cls.handlers.append(args[0])
@@ -64,7 +76,7 @@ class Handler:
 	@classmethod
 	def fire_handlers(cls, *args, **kwargs):
 		"""
-		Default implementation; fire every handler, passing in any received arguments.
+		Fire every handler, passing in any received arguments.
 		"""
 
 		for handler in cls.handlers:
@@ -73,16 +85,19 @@ class Handler:
 
 class MessageHandler(Handler):
 	"""
-	Decorator class for functions that should be run whenever the bot receives a message.
+	Decorator for handlers which fire when the bot receives a message.
 	
 	MessageHandlers should accept one argument:
-		msg -- the imp-specific Message object representing the message the bot received.
+		msg: an instantiated imp-specific subclass of bot.Message representing
+			the message the bot received.
 	
-	msg is passed by reference, so handlers may modify msg freely, and later-fired handlers
-		will recieve the changed versions.
+	The msg parameter is passed by-reference, so mutations to it will be seen
+	by later-fired handlers.
 	
-	A handler may return a string, in which case it is assumed that event doesn't need further handling,
-		and no further handlers need be called. The bot will use such a string to reply.
+	A handler may return a non-None value to indicate that processing of a
+	particular event is finished, and no further handlers should be called. If
+	such a value is a string, the bot will use it to reply to the message which
+	incited the event.
 	"""
 
 	dec_takes_arg = False
@@ -92,10 +107,10 @@ class MessageHandler(Handler):
 	@classmethod
 	def fire_handlers(cls, msg):
 		"""
-		Fire message handlers. TODO MessageHandler.fire_handlers docstring
+		Fire message handlers.
 		
 		Args:
-			msg --
+			msg: the message which provoked the event.
 		"""
 
 		for handler in cls.handlers:
@@ -106,13 +121,14 @@ class MessageHandler(Handler):
 
 class ConfigLoadHandler(Handler):
 	"""
-	Decorator class for functions that should be run when a configuration file is loaded/reloaded.
+	Decorator for handlers which fire when a config file is [re]loaded.
 	
 	The decorator should be passed a single argument:
-		conf_name -- the name of the configuration file (minus '.py') that the handler should be alerted to.
+		conf_name: the name of the configuration file (without '.yml') that the
+			handler should be alerted to.
 	
 	Each handler should accept a single argument:
-		new_conf -- the yaml-parsed contents of the newly updated config file.
+		new_conf: the yaml-parsed contents of the newly updated config file.
 	"""
 
 	dec_takes_args = True
@@ -122,11 +138,12 @@ class ConfigLoadHandler(Handler):
 	@classmethod
 	def add_handler(cls, handler, conf_name):
 		"""
-		Add a handler to be activated whenever a specific config file is reloaded.
+		Add a handler for a specific config.
 
 		Args:
-			handler ---- the handler to add.
-			conf_name -- name of the configuration file (minus '.py') that this handler should be alerted to.
+			handler: the handler to add.
+			conf_name: name of the configuration file (minus '.py') that this
+				handler should be alerted to.
 		"""
 
 		if conf_name not in cls.handlers:
@@ -137,13 +154,12 @@ class ConfigLoadHandler(Handler):
 	@classmethod
 	def fire_handlers(cls, conf_name, new_conf):
 		"""
-		Fire all handlers for the given config, passing in the new config options.
+		Fire handlers for the given config.
 
 		Args:
-			conf_name -- the name of the config being loaded.
-			new_conf --- the parsed contents of the new config file.
+			conf_name : the name of the config being loaded.
+			new_conf: the parsed contents of the new config file.
 		"""
 
 		for handler in cls.handlers.get(conf_name, []):
 			handler(new_conf)
-

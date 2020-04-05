@@ -2,7 +2,7 @@
 Commands for interacting with the quotes of the late NexusBot.
 
 Commands:
-  xquote <id>
+	xquote <id>
 """
 
 import json
@@ -20,9 +20,22 @@ with open(QUOTES_FILE, "r") as file:
 	quotes[:] = json.load(file)
 
 
-@Command(cooldown=15, args_val=(lambda *args: not args or (len(args) == 1 and args[0].isdigit())),
-		args_usage="[quote id]")
+@Command(
+	cooldown=15,
+	args_val=(lambda *args:
+		not args
+		or (
+			len(args) == 1
+			and args[0].isdigit()
+		)
+	),
+	args_usage="[quote id]",
+)
 def xquote(qid=None):
+	"""
+	Display a quote from the alternate list.
+	"""
+	
 	if qid:
 		qid = int(qid)
 		if not 1 <= qid <= len(quotes):
@@ -31,5 +44,5 @@ def xquote(qid=None):
 	else:
 		qid = random.randint(1, len(quotes))
 	
-	quote = quotes[qid-1]
-	return "X-Quote #{}: {} (Saved by: {})".format(qid, quote["quote"], quote["poster"])
+	quote = quotes[qid - 1]
+	return f"X-Quote #{qid}: {quote['quote']} (Saved by: {quote['poster']})"

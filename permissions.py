@@ -1,46 +1,54 @@
+"""
+Module for permission handling.
+"""
+
 from copy import deepcopy
 
 from handlers import ConfigLoadHandler
 
-
-# TODO Add a config option to specify a default group.
-# TODO Presently, the behavior of conflicting perms like 'a.b' and '-a.b.*' is undefined. Define it.
-# TODO Get rid of group_lvl concept, and just run a BFS on the inheritance graph.
 
 class PermNode:
 	"""
 	A single node of a permission trie for a single permission group.
 
 	Attributes:
-		name ------- the name of this specific node, e.g. "cmd" or "foo", but not "cmd.foo".
-		root ------- boolean of whether this is the root node in the perm trie.
-		tvalue ----- the truth value of this specific node, either True, False, or None.
-		wildcard --- boolean of whether all descendants should have the same tvalue as this node.
-		children --- child nodes of this permission node.
-		group_lvl -- the priority of the permission group that this node originally came from.
-	
-	There are two semantically different types of nodes; terminal and intermediate nodes.
-	
-	Terminal nodes are those resulting from being the last node of a parsed permission, e.g. "c" in "a.b.c".
-	They are distinguished by having a non-None tvalue, and represent possible stopping points
-		in perm resolution. Their tvalue is False if the perm is negated, and True otherwise.
-	
-	Intermediate nodes are those that were not the last node of any parsed permission, e.g. "a" and "b" in "a.b.c".
-	They are distinguished by their tvalue being None, and represent intermediate points in perm resolution.
+		name: the name of this specific node, e.g. "cmd" or "foo", but not
+			"cmd.foo".
+		root: boolean of whether this is the root node in the perm trie.
+		tvalue: the truth value of this specific node, either True, False, or
+			None.
+		wildcard: boolean of whether all descendants should have the same
+			tvalue as this node.
+		children: child nodes of this permission node.
+		group_lvl: the priority of the permission group that this node
+			originally came from.
 	"""
 
-	WILDCARD_NAME = "*" # Wildcard node gives/negates all descendants if they are not otherwise specified..
-	PERM_SEP = "." # Separator for the individual nodes of a permission string, e.g. in "foo.bar.baz".
-	NEG_PREFIX = "-" # Prefix that indicates a permission is negated.
+	# The marker for the wildcard node, which gives/negates all descendants if
+	# they are not otherwise specified.
+	WILDCARD_NAME = "*"
 	
-	def __init__(self, name="", root=False, tvalue=None,
-				 wildcard=None, children=None, group_lvl=0):
+	# The separator for the permission nodes in a single permission string.
+	PERM_SEP = "."
+	
+	# The prefix which indicates that a permission node is negated.
+	NEG_PREFIX = "-"
+	
+	def __init__(
+		self,
+		name="",
+		root=False,
+		tvalue=None,
+		wildcard=None,
+		children=None,
+		group_lvl=0,
+	):
 		
 		self.name = name
 		self.root = root
 		self.tvalue = tvalue
 		self.wildcard = wildcard
-		self.children = children or {} # Can't just use normal default arg, since lists are mutable.
+		self.children = children or {}
 		self.group_lvl = group_lvl
 	
 	@property
@@ -60,30 +68,59 @@ class PermNode:
 		
 		Created primarily for use with pptree.print_tree()
 		
-		>>> PermNode(name='foo').name
-		'foo'
-		
-		>>> PermNode(name='bar', tvalue=False, wildcard=True).name
-		'-bar*'
+		Examples:
+			>>> PermNode(name='foo').name
+			'foo'
+			
+			>>> PermNode(name='bar', tvalue=False, wildcard=True).name
+			'-bar*'
 		
 		"""
 		
-		return "{}{}{}".format("-" if self.tvalue is False else "",
-							   self.name,
-							   "*" if self.wildcard else "")
+		neg_prefix = "-" if self.tvalue is False else ""
+		wildcard_suffix = "*" if self.wildcard else ""
+		
+		return f"{neg_prefix}{self.name}{wildcard_suffix}"
 	
 	def __str__(self):
-		return "PermNode(name=%s, tvalue=%s%s)" % (self.formatted_name, "*" if self.wildcard else "", self.tvalue)
+		"""
+		Convert the permission node to a string.
+		"""
+		
+		wildcard = "*" if self.wildcard else ""
+		return "PermNode(name={}, tvalue={}{}".format(
+			self.formatted_name,
+			"*" if self.wildcard else "",
+			self.tvalue,
+		)
 	
 	__repr__ = __str__
 	
 	def __eq__(self, other):
-		return all([getattr(self, attr) == getattr(other, attr) for attr in ("name", "root",
-																			 "tvalue", "wildcard",
-																			 "group_lvl", "children")])
+		"""
+		Compare the equality of all PermNode attributes.
+		"""
+		
+		eq_attrs = [
+			"name",
+			"root",
+			"tvalue",
+			"wildcard",
+			"group_lvl",
+			"children",
+		]
+		
+		return all(
+			getattr(self, attr) == getattr(other, attr)
+			for attr in eq_attrs
+		)
 	
 	@classmethod
 	def new(cls):
+		"""
+		Make a new PermNode root object.
+		"""
+		
 		return cls(root=True)
 	
 	def is_terminal(self):
@@ -98,33 +135,41 @@ class PermNode:
 		Add a single permission to this trie. This node must be the root.
 		
 		Args:
-			perm ------- the permission string to add to the trie.
-			group_lvl -- the group_lvl of perm.
+			perm: the permission string to add to the trie.
+			group_lvl: the group level of perm.
 		"""
 
 		if not self.root:
 			raise Exception("Cannot add a perm to a non-root trie node.")
 
-		# If the perm starts with the negation prefix, set the tvalue to false and chop the prefix off.
+		# If the perm starts with the negation prefix, set the tvalue to false
+		# and remove the prefix.
 		tvalue = not perm.startswith(self.NEG_PREFIX)
 		if not tvalue:
 			perm = perm[len(self.NEG_PREFIX):]
 
-		# Walk until the perm is out of nodes.
+		# Walk the trie until the perm is out of nodes.
 		cur = self
 		for name in perm.split(self.PERM_SEP):
-			# This node is a wildcard; the previous node should be set accordingly.
+			# This node is a wildcard; the previous node should be set
+			# accordingly.
 			if name == self.WILDCARD_NAME:
 				cur.wildcard = True
-				break # Wildcards should only every be the last node in a perm, but just in case.
+				# Wildcards should only every be the last node in a perm, but
+				# we'll break just in case.
+				break
 			
-			# If the current perm node isn't in the trie node's children, make it.
+			# If the current perm node isn't in the trie node's children, add
+			# it.
 			if name not in cur.children.keys():
 				cur.children[name] = PermNode(name=name, group_lvl=group_lvl)
 				
 			# Otherwise, change the group_lvl to the lower of the two.
 			else:
-				cur.children[name].group_lvl = min(cur.children[name].group_lvl, group_lvl)
+				cur.children[name].group_lvl = min(
+					cur.children[name].group_lvl,
+					group_lvl,
+				)
 		
 			cur = cur.children[name]
 
@@ -134,15 +179,23 @@ class PermNode:
 		"""
 		Recursively merge another permission trie with self.
 		
-		Where both tries have a terminal node in the same place, take the values of the
-			one with the higher group priority.
+		Where both tries have a terminal node in the same place, take the
+		values of the one with the higher group priority.
 		
 		Args:
-			other -- the trie to merge with self.
+			other: the trie to merge with self.
 		"""
 		
-		# Use other's tvalue if self isn't terminal or other has a higher priority.
-		if not self.is_terminal() or (other.is_terminal() and self.group_lvl > other.group_lvl):
+		# Use other's tvalue if self isn't terminal or other has a higher
+		# priority.
+		use_other_tvalue = (
+			not self.is_terminal()
+			or (
+				other.is_terminal()
+				and self.group_lvl > other.group_lvl
+			)
+		)
+		if use_other_tvalue:
 			self.tvalue = other.tvalue
 		
 		self.wildcard = self.wildcard or other.wildcard
@@ -159,19 +212,23 @@ class PermNode:
 	
 	def has_perm(self, perm):
 		"""
-		Test whether self includes the given permission. This node must be the root.
+		Test whether self includes the given permission.
 		
 		Args:
-			perm -- the perm to test against this perm trie.
+			perm: the perm to test against this perm trie.
 		
 		Returns: True if self includes perm, False otherwise.
 		"""
 
 		if not self.root:
-			raise Exception("Cannot verify a perm against a non-root trie node.")
+			raise Exception(
+				"Cannot verify a perm against a non-root trie node."
+			)
 
 		# Walk through the trie, looking for a satisfying node.
-		max_pri = (float("-inf"), float("-inf"), False) # Default to False, if nothing found.
+		
+		# Default to False, if nothing is found.
+		max_pri = (float("-inf"), float("-inf"), False)
 		cur = self
 		level = 0
 
@@ -210,8 +267,16 @@ class PermNode:
 
 perm_groups = {}
 
+
 @ConfigLoadHandler("permissions")
 def validate_perm_groups(conf):
+	"""
+	Validate the loaded config.
+	
+	Args:
+		conf: the config to validate.
+	"""
+	
 	groups = conf["groups"]
 	
 	# If the default group isn't defined, make it.
@@ -222,7 +287,10 @@ def validate_perm_groups(conf):
 	for group in groups:
 		for inh in groups[group].get("inherit", []):
 			if inh not in groups:
-				raise Exception("Permission group '%s' inherits from nonexistent group '%s'." % (group, inh))
+				raise Exception(
+					f"Permission group '{group}' inherits from nonexistent "
+					+ f"group '{inh}'."
+				)
 	
 	# Ensure there are no cycles in the inheritance graph.
 	
@@ -231,18 +299,24 @@ def validate_perm_groups(conf):
 	
 	def cycle_search(node, past):
 		"""
-		Search for a cycle in the inheritance graph including this group or its descendants.
-		Raise an exception if found.
+		Search for a cycle in the inheritance graph.
+		
+		An exception is raised if one is found.
 		
 		Args:
-			group -- the current node.
-			past --- a set of all nodes that have been encountered in the past.
+			node: the current node.
+			past: a set of all nodes that have been encountered in the past.
 		"""
 		
-		if node in past: # We've encountered this node before; we found a cycle.
-			raise Exception("Permission inheritance loop including group '%s'." % node)
+		if node in past:
+			# We've encountered this node before; we found a cycle.
+			raise Exception(
+				f"Permission inheritance loop including group '{node}'."
+			)
 		
-		if node in cleared: # We've already checked this node and its descendants elsewhere in the traversal.
+		if node in cleared:
+			# We've already checked this node and its descendants elsewhere in
+			# the traversal.
 			return None
 		
 		past.add(node)
@@ -250,8 +324,10 @@ def validate_perm_groups(conf):
 		for desc in groups[node].get("inherit", []):
 			cycle_search(desc, past)
 		
-		past.discard(node) # Pop the current item off the past stack.
-		cleared.add(node) # Mark the current node as cleared.
+		# Pop the current item off the past stack.
+		past.discard(node)
+		# Mark the current node as cleared.
+		cleared.add(node)
 	
 	# Search every group for cycles.
 	for group in groups:
@@ -263,7 +339,8 @@ def make_perm_trie(groups_conf, group):
 	Make the perm trie for the given group.
 	
 	Args:
-		group -- the name of the permission group to make a perm trie for.
+		groups_conf: the config to create the perm trie with.
+		group: the name of the permission group to make a perm trie for.
 	"""
 	
 	if group in perm_groups:
@@ -282,8 +359,15 @@ def make_perm_trie(groups_conf, group):
 		
 		trie.merge(gt)
 
+
 @ConfigLoadHandler("permissions")
 def construct_perm_tries(conf):
+	"""
+	Construct perm tries from the given config.
+	
+	Args:
+		conf: the config to construct perm tries from.
+	"""
 	
 	# Clear the perm groups, in case this is a reload.
 	perm_groups.clear()
@@ -293,7 +377,16 @@ def construct_perm_tries(conf):
 
 			
 def group_has_perm(group, perm):
-	if group is None: # Give the default group if no other is specified.
+	"""
+	Return true if the given group has the given perm, or False otherwise.
+	
+	Args:
+		group: the group to test for permission inclusion.
+		perm: the perm to test.
+	"""
+	
+	if group is None:
+		# Give the default group if no other is specified.
 		group = "default"
 	
 	# If the user somehow has a non-specified permission group, assume false.
@@ -301,4 +394,3 @@ def group_has_perm(group, perm):
 		return False
 	
 	return perm_groups[group].has_perm(perm)
-

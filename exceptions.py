@@ -5,14 +5,15 @@ Definitions for various useful exceptions.
 
 class CommandException(Exception):
 	"""
-	Exception to be raised when there is some user error when attempting to use a command.
+	Generic expection for errors encountered when running commands.
 	"""
 	
 	pass
 
+
 class UnknownCommandException(CommandException):
 	"""
-	Exception to be raised when a user attempts to use a nonexistant command.
+	Exception for when a user attempts to use a nonexistant command.
 	"""
 	
 	pass
@@ -20,7 +21,7 @@ class UnknownCommandException(CommandException):
 
 class BotRestartException(Exception):
 	"""
-	Exception to be raised in order to restart the bot.
+	Exception to be raised in order to signal the bot to restart.
 	"""
 	
 	pass
@@ -28,7 +29,7 @@ class BotRestartException(Exception):
 
 class BotShutdownException(Exception):
 	"""
-	Exception to be raised in order to make the bot shut down.
+	Exception to be raised in order to signal the bot to shut down.
 	"""
 	
 	pass

@@ -7,8 +7,13 @@ import re
 import config
 from handlers import MessageHandler
 
+
 @MessageHandler
 def mc_msg_handler(msg):
+	"""
+	Intercept bridge-bot messages and normalise them.
+	"""
+	
 	conf = config.configs["minecraft"]
 	
 	sender = msg.sender_id or msg.sender_name
