@@ -57,4 +57,4 @@ def regex_msg_handler(msg):
 				cdk,
 				config.configs["regex"]["static-cooldown"],
 			)
-			return f"{msf.sender_name} - {_resps[ind]}"
+			return f"{msg.sender_name} - {_resps[ind]}"
