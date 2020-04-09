@@ -26,6 +26,17 @@ def register_commands():
 		register_com_mod(mod)
 
 
+def deregister_command(command):
+	"""
+	Remove a command's registration, preventing it from being triggered.
+	
+	Args:
+		command: the name of the command to deregister.
+	"""
+	
+	del dynamic_commands[command]
+
+
 def register_com_mod(mod_name):
 	"""
 	Register a single command module.
