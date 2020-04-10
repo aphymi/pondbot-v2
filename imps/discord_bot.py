@@ -54,7 +54,7 @@ class DiscordMessage(Message):
 		self.sender_name = msg.author.display_name
 		self.sender_id = msg.author.id
 		
-		roles = getattr(self.raw_msg.author, "roles", default=[])
+		roles = getattr(self.raw_msg.author, "roles", [])
 		
 		for role in roles:
 			perm_role_items = config.configs["discord"]["perm-roles"].items()
