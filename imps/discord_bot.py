@@ -54,13 +54,15 @@ class DiscordMessage(Message):
 		self.sender_name = msg.author.display_name
 		self.sender_id = msg.author.id
 		
-		for role in [r.id for r in self.raw_msg.author.roles]:
+		roles = getattr(self.raw_msg.author, "roles", default=[])
+		
+		for role in roles:
 			perm_role_items = config.configs["discord"]["perm-roles"].items()
 			for group, ranks in perm_role_items:
 				# In case ranks weren't made as strings in the config file,
 				# convert them to such.
 				ranks = [str(r) for r in ranks]
-				if role in ranks:
+				if role.id in ranks:
 					self.sender_group = group
 					break
 		
@@ -126,8 +128,8 @@ async def on_error(*args, **kwargs):
 		issubclass(err[0], BotShutdownException)
 		or issubclass(err[0], BotRestartException)
 	)
+	
 	if error_requires_graceful_stop:
-		
 		# Send a parting message when the bot shuts down.
 		if config.configs["discord"].get("shutdown-msg"):
 			await client.send_message(
