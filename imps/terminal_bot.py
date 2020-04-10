@@ -12,11 +12,16 @@ class TerminalBot(Bot):
 	"""
 	
 	def run(self):
+		"""
+		Run main event loop.
+		"""
+		
 		self.set_up()
 		
 		while True:
 			msg = TerminalMessage(input("> "))
 			msg.reply()
+
 
 bot = TerminalBot
 
@@ -36,5 +41,9 @@ class TerminalMessage(Message):
 		self._parse()
 	
 	def reply(self):
+		"""
+		Send a reply to the received message.
+		"""
+		
 		if self.reply_msg:
 			print(self.reply_msg)
