@@ -111,8 +111,12 @@ def cmd_msg_handler(msg):
 	"""
 	
 	com_conf = config.configs["commands"]
+	command_prefix = com_conf["command-prefix"]
 	
-	if msg.text_content.startswith(com_conf["command-prefix"]):
+	message_starts_with_prefix = msg.text_content.startswith(command_prefix)
+	message_is_prefix = msg.text_content == command_prefix
+	
+	if message_starts_with_prefix and not message_is_prefix:
 		
 		try:
 			# Commands can throw errors, so those should be handled.
@@ -123,6 +127,7 @@ def cmd_msg_handler(msg):
 				msg.text_content[len(com_conf["command-prefix"]):]
 				.split()
 			)
+			
 			cmd_name, args = components[0], components[1:]
 			
 			# Truncate arguments at 20 characters to avoid stupid values
