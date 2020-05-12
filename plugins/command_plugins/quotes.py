@@ -138,7 +138,7 @@ def addquote(*text):
 
 
 @Command(
-	args_val=(lambda *args: args and all([arg.isdigit() for arg in args])),
+	args_val=(lambda *args: args and all(arg.isdigit() for arg in args)),
 	args_usage="<id...>",
 )
 def remquote(*nums):
@@ -185,7 +185,7 @@ def remquote(*nums):
 
 
 @Command(
-	args_val=(lambda *args: args and all([arg.isdigit() for arg in args])),
+	args_val=(lambda *args: args and all(arg.isdigit() for arg in args)),
 	args_usage="<id...>",
 )
 def resquote(*nums):

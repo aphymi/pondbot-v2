@@ -21,7 +21,7 @@ def register_commands():
 	dynamic_commands.clear()
 	
 	for mod in config.configs["commands"]["registered-cmd-pls"]:
-		# Simple importing the modules will make the commands register
+		# Simply importing the modules will make the commands register
 		# themselves, as a side-effect of @Command.
 		register_com_mod(mod)
 
