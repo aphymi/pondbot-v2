@@ -78,7 +78,7 @@ if __name__ == "__main__":
 					"manage.py",
 					# C-style name of the command, as first argv.
 					"manage.py",
-					arg_names["no_detach"],
+					arg_names["nodetach"],
 				)
 			
 			except BotShutdownException:
