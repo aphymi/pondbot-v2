@@ -33,7 +33,7 @@ def load_config(conf):
 	"""
 	
 	with open(join("configs", (conf + ".yml"))) as file:
-		config = yaml.load(file.read())
+		config = yaml.load(file.read(), Loader=yaml.FullLoader)
 	
 	ConfigLoadHandler.fire_handlers(conf, config)
 	configs[conf] = config

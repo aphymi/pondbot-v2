@@ -172,7 +172,9 @@ class TestGroupPermissions(TestCase):
 	
 	@classmethod
 	def setUpClass(cls):
-		permissions.construct_perm_tries(yaml.load(fixture))
+		permissions.construct_perm_tries(
+			yaml.load(fixture, Loader=yaml.FullLoader)
+		)
 	
 	def test_root_wildcard(self):
 		self.assertGHP("dev", "absent.nope.nada")
