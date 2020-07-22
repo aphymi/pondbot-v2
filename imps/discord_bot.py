@@ -14,6 +14,10 @@ from exceptions import BotShutdownException, BotRestartException
 client = discord.Client()
 
 
+def _get_default_channel():
+	return client.get_channel(config.configs["discord"]["default-channel"])
+
+
 class DiscordBot(Bot):
 	"""
 	A bot implementation for Discord servers.
@@ -74,10 +78,7 @@ class DiscordMessage(Message):
 		"""
 		
 		if self.reply_msg:
-			await client.send_message(
-				self.raw_msg.channel,
-				self.reply_msg,
-			)
+			await self.raw_msg.channel.send(self.reply_msg)
 
 
 bot = DiscordBot
@@ -91,10 +92,9 @@ async def on_ready():
 	
 	# Send a nice startup message upon joining a channel.
 	if config.configs["discord"].get("startup-msg"):
-		await client.send_message(
-			discord.Object(config.configs["discord"]["default-channel"]),
-			config.configs["discord"]["startup-msg"],
-		),
+		await _get_default_channel().send(
+			config.configs["discord"]["startup-msg"]
+		)
 		
 
 @client.event
@@ -132,9 +132,8 @@ async def on_error(*args, **kwargs):
 	if error_requires_graceful_stop:
 		# Send a parting message when the bot shuts down.
 		if config.configs["discord"].get("shutdown-msg"):
-			await client.send_message(
-				discord.Object(config.configs["discord"]["default-channel"]),
-				config.configs["discord"]["shutdown-msg"],
+			await _get_default_channel().send(
+				config.configs["discord"]["shutdown-msg"]
 			)
 		
 		client.stop_err = err[0]
