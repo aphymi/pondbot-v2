@@ -63,9 +63,7 @@ class DiscordMessage(Message):
 		for role in roles:
 			perm_role_items = config.configs["discord"]["perm-roles"].items()
 			for group, ranks in perm_role_items:
-				# In case ranks weren't made as strings in the config file,
-				# convert them to such.
-				ranks = [str(r) for r in ranks]
+				ranks = [int(r) for r in ranks]
 				if role.id in ranks:
 					self.sender_group = group
 					break
